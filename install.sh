@@ -5,23 +5,22 @@
 #
 #   Target hardware:
 #     CPU : Intel i7-4800MQ (Haswell, 4ª gen)
-#     GPU : Intel HD Graphics 4600 (integrada, Gen 7.5)
+#     GPU : Intel HD Graphics 4600 (iGPU Gen 7.5)
 #     Kernel: linux-cachyos (principal) + linux-lts (respaldo)
 #
-#   Qué hace este script:
-#     1. Agrega repos CachyOS (keyring + mirrorlist)
-#     2. Instala kernels cachyos + lts
-#     3. Drivers correctos para Haswell (libva-intel-driver, NO intel-media-driver)
-#     4. Optimizaciones CachyOS (ananicy-cpp, bfq scheduler, powersave governor)
-#     5. Elimina bspwm y toda su configuración
-#     6. Instala todos los paquetes
-#     7. Clona y aplica dotfiles (con backup de lo existente)
-#     8. Configura servicios y zsh
+#   Este script:
+#     - Agrega repos CachyOS
+#     - Instala kernels + drivers Intel Haswell correctos
+#     - Limpia drivers sobrantes (vulkan-radeon, vulkan-nouveau)
+#     - Aplica optimizaciones CachyOS (bfq, ananicy, powersave, zram)
+#     - Elimina bspwm y TODA su configuración
+#     - Instala todos los paquetes del escritorio
+#     - Clona y aplica dotfiles (con backup automático de lo existente)
+#     - Preserva configs propias de la laptop (tmux, yazi, zellij, spicetify)
 # ============================================================
 
 set -e
 
-# ── Colores ──────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -41,26 +40,25 @@ DOTFILES_REPO="https://github.com/${GITHUB_USER}/dotfiles.git"
 DOTFILES_DIR="$HOME/.dotfiles"
 
 # ════════════════════════════════════════════════════════════
-section "Instalador de dotfiles - Sadrach"
+section "Instalador de dotfiles - Sadrach (laptop)"
 # ════════════════════════════════════════════════════════════
 echo ""
-echo -e "  ${BOLD}Hardware objetivo:${NC}"
+echo -e "  ${BOLD}Hardware:${NC}"
 echo -e "   CPU : Intel i7-4800MQ (Haswell)"
-echo -e "   GPU : Intel HD Graphics 4600 (iGPU Gen 7.5)"
-echo -e "   Kernel: linux-cachyos (principal) + linux-lts (respaldo)"
+echo -e "   GPU : Intel HD Graphics 4600 (iGPU, Gen 7.5)"
+echo -e "   Kernels: linux-cachyos (principal) + linux-lts (respaldo)"
 echo ""
-echo -e "  ${BOLD}Este script va a:${NC}"
-echo -e "   1.  Agregar repos de CachyOS"
-echo -e "   2.  Instalar kernels cachyos + lts"
-echo -e "   3.  Instalar drivers Intel correctos para Haswell"
-echo -e "   4.  Aplicar optimizaciones CachyOS (bfq, ananicy, powersave)"
-echo -e "   5.  Eliminar bspwm y toda su configuración"
-echo -e "   6.  Instalar todos tus paquetes"
-echo -e "   7.  Clonar y aplicar tus dotfiles (backup de lo existente)"
-echo -e "   8.  Configurar servicios y zsh"
+echo -e "  ${BOLD}Qué va a pasar:${NC}"
+echo -e "   ✓ Repos CachyOS agregados"
+echo -e "   ✓ Drivers Intel Haswell correctos (i965 VA-API)"
+echo -e "   ✗ vulkan-radeon y vulkan-nouveau eliminados (no aplican)"
+echo -e "   ✓ Optimizaciones: powersave, bfq, ananicy, zram"
+echo -e "   ✗ bspwm eliminado completamente"
+echo -e "   ✓ Dotfiles del escritorio aplicados"
+echo -e "   ✓ Backup automático de todo lo que choque"
+echo -e "   ✓ tmux, yazi, zellij, spicetify preservados"
 echo ""
 warn "Tus archivos personales (Documentos, Imágenes, etc.) NO se tocan."
-warn "Todo lo que choque con tus dotfiles se mueve a ~/.dotfiles-backup-FECHA/"
 echo ""
 read -rp "$(echo -e ${YELLOW}"¿Continuar? [s/N]: "${NC})" confirm
 [[ "$confirm" =~ ^[sS]$ ]] || { echo "Cancelado."; exit 0; }
@@ -71,28 +69,25 @@ section "1. Sistema base"
 info "Actualizando sistema..."
 sudo pacman -Syu --noconfirm
 
-info "Instalando dependencias mínimas..."
-sudo pacman -S --needed --noconfirm \
-    base-devel git curl wget zsh gnupg
+info "Dependencias mínimas..."
+sudo pacman -S --needed --noconfirm base-devel git curl wget zsh gnupg
 
 # ════════════════════════════════════════════════════════════
-section "2. Repositorios de CachyOS"
+section "2. Repositorios CachyOS"
 # ════════════════════════════════════════════════════════════
 if grep -q "\[cachyos\]" /etc/pacman.conf 2>/dev/null; then
-    ok "Repos de CachyOS ya configurados"
+    ok "Repos CachyOS ya presentes"
 else
-    info "Agregando repos de CachyOS..."
+    info "Instalando CachyOS keyring..."
     cd /tmp
-
-    info "  → cachyos-keyring..."
     git clone https://aur.archlinux.org/cachyos-keyring.git --depth=1
     cd cachyos-keyring && makepkg -si --noconfirm && cd /tmp
 
-    info "  → cachyos-mirrorlist..."
+    info "Instalando CachyOS mirrorlist..."
     git clone https://aur.archlinux.org/cachyos-mirrorlist.git --depth=1
     cd cachyos-mirrorlist && makepkg -si --noconfirm && cd /tmp
 
-    info "  → cachyos-v3-mirrorlist..."
+    info "Instalando CachyOS v3-mirrorlist..."
     git clone https://aur.archlinux.org/cachyos-v3-mirrorlist.git --depth=1
     cd cachyos-v3-mirrorlist && makepkg -si --noconfirm && cd /tmp
 
@@ -108,86 +103,88 @@ Include = /etc/pacman.d/cachyos-mirrorlist
 PACMANEOF
 
     sudo pacman -Syu --noconfirm
-    ok "Repos de CachyOS configurados"
+    ok "Repos CachyOS configurados"
 fi
 
 # ════════════════════════════════════════════════════════════
-section "3. Kernels: CachyOS (principal) + LTS (respaldo)"
+section "3. Kernels: CachyOS + LTS"
 # ════════════════════════════════════════════════════════════
 info "Instalando linux-cachyos y linux-lts..."
 sudo pacman -S --needed --noconfirm \
-    linux-cachyos \
-    linux-cachyos-headers \
-    linux-lts \
-    linux-lts-headers \
+    linux-cachyos linux-cachyos-headers \
+    linux-lts linux-lts-headers \
     linux-firmware
-
 ok "Kernels instalados"
-info "Al arrancar verás en GRUB:"
-info "  → linux-cachyos  (kernel principal optimizado)"
-info "  → linux-lts      (respaldo / safe mode)"
 
 # ════════════════════════════════════════════════════════════
-section "4. Intel ucode + drivers para Haswell (iGPU Gen 7.5)"
+section "4. Drivers Intel Haswell (HD Graphics 4600)"
 # ════════════════════════════════════════════════════════════
 
-# NOTA IMPORTANTE:
-# El i7-4800MQ tiene Intel HD 4600 (Haswell = Gen 7.5)
-# - intel-media-driver  → Solo Gen 8+ (Broadwell en adelante) → NO usar
-# - libva-intel-driver  → Gen 4-9 (Haswell incluido) → CORRECTO
-# - vulkan-intel        → Haswell soporta Vulkan 1.0 parcial, se instala pero limitado
+# NOTA TÉCNICA:
+# i7-4800MQ = Haswell = Intel Gen 7.5
+# - libva-intel-driver (i965) → Gen 4 a 9 → CORRECTO para Haswell
+# - intel-media-driver (iHD)  → Gen 8+     → NO aplica a Haswell
+# Tu laptop tiene ambos instalados — eliminamos intel-media-driver
 
-info "Instalando intel-ucode (microcódigo para i7-4800MQ)..."
-sudo pacman -S --needed --noconfirm intel-ucode
+info "Eliminando intel-media-driver (no aplica a Haswell)..."
+if pacman -Qq intel-media-driver &>/dev/null; then
+    sudo pacman -Rns --noconfirm intel-media-driver 2>/dev/null && \
+        ok "intel-media-driver eliminado" || \
+        warn "No se pudo eliminar intel-media-driver"
+else
+    ok "intel-media-driver no estaba instalado"
+fi
+
+info "Eliminando drivers sobrantes (AMD/NVIDIA no aplican)..."
+for pkg in vulkan-radeon vulkan-nouveau xf86-video-amdgpu xf86-video-ati xf86-video-nouveau lib32-vulkan-radeon; do
+    if pacman -Qq "$pkg" &>/dev/null; then
+        sudo pacman -Rns --noconfirm "$pkg" 2>/dev/null && \
+            ok "Eliminado: $pkg" || warn "No se pudo eliminar: $pkg"
+    fi
+done
 
 info "Instalando drivers Intel Haswell correctos..."
 sudo pacman -S --needed --noconfirm \
-    mesa \
-    lib32-mesa \
-    libva-intel-driver \
-    lib32-libva-intel-driver \
+    mesa lib32-mesa \
+    libva-intel-driver lib32-libva-intel-driver \
     libva-utils \
-    vulkan-intel \
-    lib32-vulkan-intel \
+    vulkan-intel lib32-vulkan-intel \
     vulkan-tools \
-    intel-gpu-tools
-
+    intel-gpu-tools \
+    intel-ucode
 ok "Drivers Intel Haswell instalados"
 
-# Configurar VA-API para Haswell (driver i965, no iHD)
-info "Configurando VA-API para Haswell (driver i965)..."
+info "Configurando VA-API → i965 (correcto para Haswell)..."
 ENVFILE="/etc/environment"
-if ! grep -q "LIBVA_DRIVER_NAME" "$ENVFILE" 2>/dev/null; then
-    # Haswell usa i965, NO iHD (ese es para Gen 8+)
-    echo "LIBVA_DRIVER_NAME=i965" | sudo tee -a "$ENVFILE" > /dev/null
-    ok "VA-API configurado → i965 (correcto para Haswell)"
-else
-    # Si ya existe pero dice iHD, corregirlo
+if grep -q "LIBVA_DRIVER_NAME" "$ENVFILE" 2>/dev/null; then
+    # Corregir si dice iHD
     sudo sed -i 's/LIBVA_DRIVER_NAME=iHD/LIBVA_DRIVER_NAME=i965/g' "$ENVFILE"
-    ok "VA-API verificado → i965"
+    ok "VA-API corregido → i965"
+else
+    echo "LIBVA_DRIVER_NAME=i965" | sudo tee -a "$ENVFILE" > /dev/null
+    ok "VA-API configurado → i965"
 fi
 
 # ════════════════════════════════════════════════════════════
 section "5. GRUB"
 # ════════════════════════════════════════════════════════════
-info "Instalando GRUB y efibootmgr..."
+info "Instalando GRUB..."
 sudo pacman -S --needed --noconfirm grub efibootmgr os-prober
 
-# Habilitar os-prober en grub (para detectar otros SO si los hay)
-if grep -q "#GRUB_DISABLE_OS_PROBER" /etc/default/grub 2>/dev/null; then
-    sudo sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-fi
+# Habilitar os-prober
+sudo sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' \
+    /etc/default/grub 2>/dev/null || true
 
-info "Generando configuración de GRUB..."
+info "Generando grub.cfg..."
 sudo grub-mkconfig -o /boot/grub/grub.cfg
-ok "GRUB configurado"
+ok "GRUB configurado (cachyos principal, lts respaldo)"
 
 # ════════════════════════════════════════════════════════════
-section "6. Optimizaciones CachyOS (igual que tu escritorio)"
+section "6. Optimizaciones CachyOS"
 # ════════════════════════════════════════════════════════════
 
-# --- CPU Governor: powersave (igual que tu escritorio) ---
-info "Configurando CPU governor → powersave..."
+# CPU Governor: powersave (igual que escritorio)
+info "CPU governor → powersave..."
 sudo pacman -S --needed --noconfirm cpupower
 sudo tee /etc/default/cpupower > /dev/null << 'EOF'
 governor='powersave'
@@ -195,80 +192,80 @@ EOF
 sudo systemctl enable --now cpupower
 ok "CPU governor: powersave"
 
-# --- I/O Scheduler: bfq (igual que tu escritorio) ---
-# bfq es ideal para laptops con HDD o SSD SATA (Haswell-era)
-info "Configurando I/O scheduler → bfq..."
+# I/O Scheduler: bfq (igual que escritorio, ideal para HDD/SSD SATA Haswell-era)
+info "I/O scheduler → bfq..."
 sudo tee /etc/udev/rules.d/60-ioschedulers.rules > /dev/null << 'EOF'
-# BFQ para todos los discos rotativos y SSD SATA
 ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="bfq"
 ACTION=="add|change", KERNEL=="nvme*", ATTR{queue/scheduler}="none"
 EOF
-ok "I/O scheduler: bfq configurado"
+ok "I/O scheduler: bfq"
 
-# --- ananicy-cpp: prioridades automáticas de procesos ---
-info "Instalando ananicy-cpp + reglas CachyOS..."
+# ananicy-cpp + reglas CachyOS
+info "ananicy-cpp + cachyos-ananicy-rules..."
 sudo pacman -S --needed --noconfirm ananicy-cpp cachyos-ananicy-rules
 ok "ananicy-cpp listo"
 
-# --- zram: swap comprimido en RAM (bueno para 16GB) ---
-info "Configurando zram..."
+# zram: swap comprimido en RAM
+info "zram con zstd..."
 sudo pacman -S --needed --noconfirm zram-generator
 sudo tee /etc/systemd/zram-generator.conf > /dev/null << 'EOF'
 [zram0]
 zram-size = ram / 2
 compression-algorithm = zstd
 EOF
-ok "zram configurado (ram/2 con zstd)"
+ok "zram configurado (ram/2, zstd)"
 
-# --- irqbalance: distribuye interrupciones entre cores ---
-info "Instalando irqbalance..."
+# irqbalance
+info "irqbalance..."
 sudo pacman -S --needed --noconfirm irqbalance
 sudo systemctl enable --now irqbalance
 ok "irqbalance activo"
 
-# --- power-profiles-daemon ---
+# power-profiles-daemon
 sudo pacman -S --needed --noconfirm power-profiles-daemon
 sudo systemctl enable --now power-profiles-daemon
 ok "power-profiles-daemon activo"
 
 # ════════════════════════════════════════════════════════════
-section "7. Eliminando bspwm y toda su configuración"
+section "7. Eliminando bspwm y TODA su configuración"
 # ════════════════════════════════════════════════════════════
-info "Desinstalando bspwm y paquetes relacionados..."
-
-BSPWM_PKGS=(bspwm sxhkd polybar picom nitrogen rofi-bspwm)
+info "Desinstalando paquetes de bspwm..."
+BSPWM_PKGS=(bspwm sxhkd polybar picom picom-git eww eww-git plank jgmenu)
 for pkg in "${BSPWM_PKGS[@]}"; do
     if pacman -Qq "$pkg" &>/dev/null; then
-        sudo pacman -Rns --noconfirm "$pkg" 2>/dev/null && ok "Desinstalado: $pkg" || warn "No se pudo desinstalar: $pkg"
+        sudo pacman -Rns --noconfirm "$pkg" 2>/dev/null && \
+            ok "Desinstalado: $pkg" || warn "No se pudo desinstalar: $pkg"
     fi
 done
 
-info "Eliminando archivos de configuración de bspwm..."
+info "Eliminando configs de bspwm..."
 BSPWM_CONFIGS=(
     "$HOME/.config/bspwm"
     "$HOME/.config/sxhkd"
     "$HOME/.config/polybar"
     "$HOME/.config/picom"
+    "$HOME/.config/plank"
+    "$HOME/.config/eww"
+    "$HOME/.config/jgmenu"
+    "$HOME/.config/alacritty"
 )
 for cfg in "${BSPWM_CONFIGS[@]}"; do
-    if [ -d "$cfg" ] || [ -f "$cfg" ]; then
+    if [ -e "$cfg" ]; then
         rm -rf "$cfg"
         ok "Eliminado: $cfg"
     fi
 done
 
-info "Eliminando sesiones de bspwm en display managers..."
+# Eliminar sesión de bspwm del display manager
 sudo rm -f /usr/share/xsessions/bspwm.desktop 2>/dev/null || true
-sudo rm -f /usr/share/wayland-sessions/bspwm.desktop 2>/dev/null || true
-
 ok "bspwm eliminado completamente"
 
 # ════════════════════════════════════════════════════════════
-section "8. Instalando yay (AUR helper)"
+section "8. Instalando yay"
 # ════════════════════════════════════════════════════════════
 if command -v yay &>/dev/null; then
-    ok "yay ya está instalado"
+    ok "yay ya instalado"
 else
     info "Instalando yay..."
     cd /tmp
@@ -281,14 +278,13 @@ fi
 # ════════════════════════════════════════════════════════════
 section "9. Paquetes oficiales + CachyOS"
 # ════════════════════════════════════════════════════════════
-info "Instalando paquetes (esto tarda varios minutos)..."
+info "Instalando paquetes (varios minutos)..."
 
 OFFICIAL_PKGS=(
     # Sistema
     base base-devel dkms
     inetutils btrfs-progs ntfs-3g
     scx-scheds sof-firmware
-    # CachyOS
     cachyos-ananicy-rules ananicy-cpp
     cachyos-rate-mirrors
     # Wayland / Hyprland
@@ -371,7 +367,12 @@ OFFICIAL_PKGS=(
     obsidian onlyoffice-bin blender
     kdiskmark qalculate-gtk
     gnome-system-monitor loupe piper cups
-    # Extras
+    # Extras laptop (preservados de tu setup actual)
+    yazi zellij
+    lazygit neovim
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    # Extras escritorio
     yad cava matugen wallust
     nwg-displays vdpauinfo libspng
     mesa-demos mesa-utils umockdev
@@ -381,13 +382,13 @@ OFFICIAL_PKGS=(
 
 sudo pacman -S --needed --noconfirm "${OFFICIAL_PKGS[@]}" || \
     warn "Algunos paquetes fallaron, continuando..."
-
 ok "Paquetes oficiales instalados"
 
 # ════════════════════════════════════════════════════════════
 section "10. Paquetes AUR"
 # ════════════════════════════════════════════════════════════
 AUR_PKGS=(
+    # Del escritorio
     8188eu-dkms-git
     ascii-image-converter
     aylurs-gtk-shell-git
@@ -406,16 +407,46 @@ AUR_PKGS=(
     visual-studio-code-bin
     warp-terminal
     yt-dlp-git
+    # De la laptop (que vale la pena conservar)
+    spicetify-cli
+    spotify
+    spotifyd
 )
 
 info "Instalando paquetes AUR..."
 yay -S --needed --noconfirm "${AUR_PKGS[@]}" || \
-    warn "Algunos paquetes AUR fallaron, revisa manualmente después"
-
+    warn "Algunos paquetes AUR fallaron, revisa manualmente"
 ok "Paquetes AUR instalados"
 
 # ════════════════════════════════════════════════════════════
-section "11. Clonando y aplicando dotfiles"
+section "11. Preservando configs propias de la laptop"
+# ════════════════════════════════════════════════════════════
+# Estas configs son tuyas y NO vienen en los dotfiles del escritorio
+# Las guardamos antes de aplicar los dotfiles y las restauramos después
+
+LAPTOP_BACKUP="/tmp/laptop-own-configs-$(date +%Y%m%d%H%M%S)"
+mkdir -p "$LAPTOP_BACKUP"
+
+LAPTOP_CONFIGS=(
+    "$HOME/.config/tmux"
+    "$HOME/.config/yazi"
+    "$HOME/.config/zellij"
+    "$HOME/.config/spicetify"
+    "$HOME/.config/spotifyd"
+    "$HOME/.config/systemd"
+    "$HOME/.config/wireplumber"
+)
+
+info "Guardando configs propias de la laptop..."
+for cfg in "${LAPTOP_CONFIGS[@]}"; do
+    if [ -e "$cfg" ]; then
+        cp -r "$cfg" "$LAPTOP_BACKUP/"
+        ok "Guardado: $(basename $cfg)"
+    fi
+done
+
+# ════════════════════════════════════════════════════════════
+section "12. Clonando y aplicando dotfiles"
 # ════════════════════════════════════════════════════════════
 if [ -d "$DOTFILES_DIR" ]; then
     warn "Ya existe $DOTFILES_DIR — haciendo backup..."
@@ -429,7 +460,7 @@ git clone --bare "$DOTFILES_REPO" "$DOTFILES_DIR"
 BACKUP_DIR="$HOME/.dotfiles-backup-$(date +%Y%m%d%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-info "Detectando conflictos y haciendo backup..."
+info "Detectando conflictos..."
 git --git-dir="$DOTFILES_DIR/" --work-tree="$HOME" checkout 2>&1 \
     | grep -E "ya existe|already exists|overwrite" \
     | awk '{print $1}' \
@@ -441,14 +472,29 @@ git --git-dir="$DOTFILES_DIR/" --work-tree="$HOME" checkout 2>&1 \
 info "Aplicando dotfiles..."
 git --git-dir="$DOTFILES_DIR/" --work-tree="$HOME" checkout
 git --git-dir="$DOTFILES_DIR/" --work-tree="$HOME" config status.showUntrackedFiles no
+ok "Dotfiles del escritorio aplicados"
 
-ok "Dotfiles aplicados"
+# Restaurar configs propias de la laptop
+info "Restaurando configs propias de la laptop..."
+for cfg in "$LAPTOP_BACKUP"/*/; do
+    name=$(basename "$cfg")
+    dest="$HOME/.config/$name"
+    # Solo restaurar si los dotfiles no trajeron esa carpeta
+    if [ ! -e "$dest" ]; then
+        cp -r "$cfg" "$dest"
+        ok "Restaurado: $name"
+    else
+        warn "$name ya existe en dotfiles, se mantiene la versión del escritorio"
+        warn "Tu versión anterior está en: $LAPTOP_BACKUP/$name"
+    fi
+done
+
 if [ -d "$BACKUP_DIR" ] && [ "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]; then
-    warn "Configs previas respaldadas en: $BACKUP_DIR"
+    warn "Configs previas con conflicto respaldadas en: $BACKUP_DIR"
 fi
 
 # ════════════════════════════════════════════════════════════
-section "12. Alias dotfiles en zsh"
+section "13. Alias dotfiles en zsh"
 # ════════════════════════════════════════════════════════════
 ZSHRC="$HOME/.zshrc"
 ALIAS_LINE="alias dotfiles='git --git-dir=\$HOME/.dotfiles/ --work-tree=\$HOME'"
@@ -461,7 +507,7 @@ else
 fi
 
 # ════════════════════════════════════════════════════════════
-section "13. Zsh como shell por defecto"
+section "14. Zsh como shell por defecto"
 # ════════════════════════════════════════════════════════════
 if [ "$SHELL" != "$(which zsh)" ]; then
     chsh -s "$(which zsh)"
@@ -471,61 +517,54 @@ else
 fi
 
 # ════════════════════════════════════════════════════════════
-section "14. Servicios del sistema"
+section "15. Servicios del sistema"
 # ════════════════════════════════════════════════════════════
 SERVICES=(
-    NetworkManager
-    bluetooth
-    sddm
-    cups
-    ufw
-    irqbalance
-    power-profiles-daemon
-    ananicy-cpp
+    NetworkManager bluetooth sddm cups
+    ufw irqbalance power-profiles-daemon ananicy-cpp
 )
-
 for svc in "${SERVICES[@]}"; do
     sudo systemctl enable --now "$svc" 2>/dev/null \
-        && ok "$svc habilitado" \
-        || warn "$svc no se pudo habilitar"
+        && ok "$svc" || warn "$svc no habilitado"
 done
 
 systemctl --user enable --now syncthing 2>/dev/null \
-    && ok "Syncthing (usuario) habilitado" \
-    || warn "Syncthing no habilitado"
+    && ok "Syncthing (usuario)" || warn "Syncthing no habilitado"
 
 # ════════════════════════════════════════════════════════════
-section "15. Regenerar initramfs y GRUB final"
+section "16. Regenerar initramfs y GRUB final"
 # ════════════════════════════════════════════════════════════
-info "Regenerando initramfs para todos los kernels..."
+info "Regenerando initramfs..."
 sudo mkinitcpio -P
 
 info "Actualizando GRUB..."
 sudo grub-mkconfig -o /boot/grub/grub.cfg
-
 ok "initramfs y GRUB actualizados"
 
 # ════════════════════════════════════════════════════════════
 echo ""
-echo -e "${GREEN}${BOLD}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}${BOLD}║   ¡Instalación completa!                         ║${NC}"
-echo -e "${GREEN}${BOLD}║                                                  ║${NC}"
-echo -e "${GREEN}${BOLD}║   Optimizaciones aplicadas:                      ║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ CPU governor  : powersave                   ║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ I/O scheduler : bfq                         ║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ ananicy-cpp   : prioridades automáticas      ║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ zram          : swap comprimido (zstd)       ║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ irqbalance    : distribución de interrupciones║${NC}"
-echo -e "${GREEN}${BOLD}║    ✓ VA-API        : i965 (correcto para Haswell) ║${NC}"
-echo -e "${GREEN}${BOLD}║                                                  ║${NC}"
-echo -e "${GREEN}${BOLD}║   Kernels en GRUB:                               ║${NC}"
-echo -e "${GREEN}${BOLD}║    → linux-cachyos  (principal)                  ║${NC}"
-echo -e "${GREEN}${BOLD}║    → linux-lts      (respaldo / safe mode)       ║${NC}"
-echo -e "${GREEN}${BOLD}║                                                  ║${NC}"
-echo -e "${GREEN}${BOLD}║   bspwm: desinstalado y configs eliminadas ✓     ║${NC}"
-echo -e "${GREEN}${BOLD}║                                                  ║${NC}"
-echo -e "${GREEN}${BOLD}║   Reinicia para aplicar todo                     ║${NC}"
-echo -e "${GREEN}${BOLD}╚══════════════════════════════════════════════════╝${NC}"
+echo -e "${GREEN}${BOLD}╔══════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}${BOLD}║   ¡Instalación completa!                             ║${NC}"
+echo -e "${GREEN}${BOLD}║                                                      ║${NC}"
+echo -e "${GREEN}${BOLD}║   Optimizaciones aplicadas:                          ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ CPU governor  : powersave                       ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ I/O scheduler : bfq                             ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ ananicy-cpp   : prioridades automáticas         ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ zram          : swap comprimido (zstd)          ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ irqbalance    : distribución de interrupciones  ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✓ VA-API        : i965 (Haswell correcto)         ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✗ intel-media-driver eliminado (no aplica)        ║${NC}"
+echo -e "${GREEN}${BOLD}║    ✗ vulkan-radeon/nouveau eliminados                ║${NC}"
+echo -e "${GREEN}${BOLD}║                                                      ║${NC}"
+echo -e "${GREEN}${BOLD}║   Kernels en GRUB:                                   ║${NC}"
+echo -e "${GREEN}${BOLD}║    → linux-cachyos  (principal)                      ║${NC}"
+echo -e "${GREEN}${BOLD}║    → linux-lts      (respaldo / safe mode)           ║${NC}"
+echo -e "${GREEN}${BOLD}║                                                      ║${NC}"
+echo -e "${GREEN}${BOLD}║   bspwm eliminado completamente ✓                    ║${NC}"
+echo -e "${GREEN}${BOLD}║   tmux, yazi, zellij, spicetify preservados ✓        ║${NC}"
+echo -e "${GREEN}${BOLD}║                                                      ║${NC}"
+echo -e "${GREEN}${BOLD}║   Reinicia y elige linux-cachyos en GRUB             ║${NC}"
+echo -e "${GREEN}${BOLD}╚══════════════════════════════════════════════════════╝${NC}"
 echo ""
 read -rp "$(echo -e ${YELLOW}"¿Reiniciar ahora? [s/N]: "${NC})" reboot_now
 [[ "$reboot_now" =~ ^[sS]$ ]] && sudo reboot
