@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 // Simplified StyledRect stub — just a colored Rectangle with a variant property.
-// Replaces ambxst's full StyledRect (gradient/halftone/shader version).
+// Replaces sadrach34's full StyledRect (gradient/halftone/shader version).
 Rectangle {
     id: root
     required property string variant

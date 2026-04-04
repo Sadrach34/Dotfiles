@@ -5,7 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-// Copia de ambxst/modules/tools/ScreenrecordTool.qml
+// Copia de sadrach34/modules/tools/ScreenrecordTool.qml
 // Diferencias: qs.modules.* eliminados, GlobalStates → SsState
 
 PanelWindow {

@@ -1,6 +1,6 @@
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  #
+# /* ---- 💫 https://github.com/sadrach34 💫 ---- */  #
 
-KooL's Hyprland-Dots
+sadrach34 dotfiles
 
 1.) Suggest not to rename any files in this directory. As this is connected and being sourced from hyprland.conf in ~/.config/hypr
 
@@ -13,4 +13,4 @@ KooL's Hyprland-Dots
 5.) If you think that the default keybinds SHOULD be adjusted, open an issue on my github page and present me a valid argument. Like conflicting to GLOBAL keybinds, etc etc etc.
 
 
-I will update the Hyprland-Dots wiki for guidance. Make sure to check out changelogs as well
+I will update the dotfiles wiki for guidance. Make sure to check out changelogs as well

@@ -1,5 +1,5 @@
 #!/bin/bash
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+# /* ---- 💫 https://github.com/sadrach34 💫 ---- */  ##
 # This script is used to play system sounds.
 # Script is used by Volume.Sh and ScreenShots.sh 
 

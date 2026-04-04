@@ -1,4 +1,4 @@
-// VerticalSliders — port 1:1 de ambxst WidgetsTab columna derecha
+// VerticalSliders — port 1:1 de sadrach34 WidgetsTab columna derecha
 // Brillo: StyledSlider vertical (track 4px, handle pill blanco)
 // Volumen + mic: CircularControl (arco Canvas + icono, drag vertical)
 import QtQuick
@@ -8,7 +8,7 @@ import Quickshell.Io
 Item {
     id: root
 
-    // ── Colores inline (mismos que ambxst) ───────────────────────────────────
+    // ── Colores inline (mismos que sadrach34) ───────────────────────────────────
     readonly property color clrPane:      "#1a1a1a"
     readonly property color clrBorder:    "#2a2a2a"
     readonly property color clrText:      "#e0e0e0"
@@ -123,7 +123,7 @@ Item {
                 }
             }
 
-            // Slider vertical brillo (port StyledSlider vertical de ambxst)
+            // Slider vertical brillo (port StyledSlider vertical de sadrach34)
             Item {
                 Layout.preferredWidth: 48
                 Layout.fillHeight: true
@@ -182,7 +182,7 @@ Item {
     } // ColumnLayout
 
     // ════════════════════════════════════════════════════════════════════════
-    // Componente: VertSlider (port StyledSlider vertical de ambxst)
+    // Componente: VertSlider (port StyledSlider vertical de sadrach34)
     // Track 4px, handle pill blanco, progreso #89b4fa bajo el handle
     // ════════════════════════════════════════════════════════════════════════
     component VertSlider: Item {
@@ -283,7 +283,7 @@ Item {
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    // Componente: CircCtrl (port CircularControl de ambxst)
+    // Componente: CircCtrl (port CircularControl de sadrach34)
     // Arco Canvas 270° con handle + icono centrado, drag vertical
     // ════════════════════════════════════════════════════════════════════════
     component CircCtrl: Item {
@@ -294,7 +294,7 @@ Item {
         signal controlChanged(real v)
         signal toggleRequested
 
-        // Geometría del arco (idéntica a ambxst CircularControl)
+        // Geometría del arco (idéntica a sadrach34 CircularControl)
         readonly property real gapAngle:    45
         readonly property real lineWidth:   4
         readonly property real arcRadius:   16

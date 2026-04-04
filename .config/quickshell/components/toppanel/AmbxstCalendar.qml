@@ -1,4 +1,4 @@
-// Calendar — port 1:1 de ambxst/calendar/Calendar.qml + CalendarDayButton.qml
+// Calendar — port 1:1 de sadrach34/calendar/Calendar.qml + CalendarDayButton.qml
 import QtQuick
 import QtQuick.Layouts
 import "calendarLayout.js" as CalendarLayout

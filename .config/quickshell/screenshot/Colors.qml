@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 
 // Minimal color stub for the screenshot module.
-// Uses neutral dark colors — no dependency on ambxst's theme system.
+// Uses neutral dark colors — no dependency on sadrach34's theme system.
 QtObject {
     readonly property color background:       "#1e1e2e"
     readonly property color surface:          "#313244"

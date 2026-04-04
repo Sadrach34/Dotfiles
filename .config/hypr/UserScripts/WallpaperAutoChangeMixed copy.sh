@@ -1,5 +1,5 @@
 #!/bin/bash
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+# /* ---- 💫 https://github.com/sadrach34 💫 ---- */  ##
 # Script para alternar aleatoriamente entre fondos de pantalla ESTATICOS y ANIMADOS
 # Uso: WallpaperAutoChangeMixed.sh <directorio_de_fondos>
 

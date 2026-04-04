@@ -5,7 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
-// Screenshot tool — lógica idéntica a ambxst/modules/tools/ScreenshotTool.qml
+// Screenshot tool — lógica idéntica a sadrach34/modules/tools/ScreenshotTool.qml
 // Única diferencia: GlobalStates → SsState (singleton local de este módulo)
 
 PanelWindow {

@@ -1,27 +1,27 @@
 #!/bin/bash
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+# /* ---- 💫 https://github.com/sadrach34 💫 ---- */  ##
 # simple bash script to check if update is available by comparing local version and github version
 
 # Local Paths
 local_dir="$HOME/.config/hypr"
 iDIR="$HOME/.config/swaync/images/"
 local_version=$(ls $local_dir/v* 2>/dev/null | sort -V | tail -n 1 | sed 's/.*v\(.*\)/\1/')
-KooL_Dots_DIR="$HOME/Hyprland-Dots"
+sadrach34_Dots_DIR="$HOME/dotfiles"
 
 # exit if cannot find local version
 if [ -z "$local_version" ]; then
-  notify-send -i "$iDIR/error.png" "ERROR "!?!?!!"" "Unable to find KooL's dots version . exiting.... "
+  notify-send -i "$iDIR/error.png" "ERROR "!?!?!!"" "Unable to find sadrach34 dots version . exiting.... "
   exit 1
 fi
 
-# GitHub URL - KooL's dots
+# GitHub URL - sadrach34 dots
 branch="main"
-github_url="https://github.com/JaKooLit/Hyprland-Dots/tree/$branch/config/hypr/"
+github_url="https://github.com/Sadrach34/dotfiles/tree/$branch/.config/hypr/"
 
-# Fetch the version from GitHub URL - KooL's dots
+# Fetch the version from GitHub URL - sadrach34 dots
 github_version=$(curl -s $github_url | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | sort -V | tail -n 1 | sed 's/v//')
 
-# Cant find  GitHub URL - KooL's dots version
+# Cant find  GitHub URL - sadrach34 dots version
 if [ -z "$github_version" ]; then
   exit 1
 fi
@@ -39,13 +39,13 @@ else
 
   case "$response" in
     "action1")  
-      if [ -d $KooL_Dots_DIR ]; then
+      if [ -d $sadrach34_Dots_DIR ]; then
       	if ! command -v kitty &> /dev/null; then
   			notify-send -i "$iDIR/error.png" "E-R-R-O-R" "Kitty terminal not found. Please install Kitty terminal."
   			exit 1
 		fi
         kitty -e bash -c "
-          cd $KooL_Dots_DIR &&
+          cd $sadrach34_Dots_DIR &&
           git stash &&
           git pull &&
           ./copy.sh &&
@@ -58,8 +58,8 @@ else
   			exit 1
 		fi
         kitty -e bash -c "
-          git clone --depth=1 https://github.com/JaKooLit/Hyprland-Dots.git $KooL_Dots_DIR &&
-          cd $KooL_Dots_DIR &&
+          git clone --depth=1 https://github.com/Sadrach34/dotfiles.git $sadrach34_Dots_DIR &&
+          cd $sadrach34_Dots_DIR &&
           chmod +x copy.sh &&
           ./copy.sh &&
 		  notify-send -u critical -i "$iDIR/ja.png" 'Update Completed:' 'Kindly log out and relogin to take effect'

@@ -1,5 +1,5 @@
 # #!/bin/bash
-# # /* ---- 💫 https://github.com/JaKooLit 💫 ---- */
+# # /* ---- 💫 https://github.com/sadrach34 💫 ---- */
 # # SDDM Wallpaper and Wallust Colors Setter
 
 # # for the upcoming changes on the simple_sddm_theme

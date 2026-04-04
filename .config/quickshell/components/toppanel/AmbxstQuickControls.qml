@@ -1,4 +1,4 @@
-// QuickControls — port 1:1 de ambxst's QuickControls.qml + ControlButton.qml
+// QuickControls — port 1:1 de sadrach34's QuickControls.qml + ControlButton.qml
 // 5 botones: WiFi, Bluetooth, NightLight, Caffeine, GameMode
 import QtQuick
 import QtQuick.Layouts
@@ -180,7 +180,7 @@ Item {
     // Evita prompts de autenticacion al reiniciar quickshell.
     // El scheduler se cambia solo cuando el usuario toca Caffeine/GameMode.
 
-    // ── Componente: ControlButton (1:1 port de ambxst's ControlButton.qml) ──
+    // ── Componente: ControlButton (1:1 port de sadrach34's ControlButton.qml) ──
     component ControlBtn: Item {
         id: cb
 

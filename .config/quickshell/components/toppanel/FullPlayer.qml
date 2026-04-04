@@ -1,4 +1,4 @@
-// FullPlayer — port 1:1 de ambxst FullPlayer.qml
+// FullPlayer — port 1:1 de sadrach34 FullPlayer.qml
 // Adapta qs.modules.* → Quickshell.Services.Mpris + colores inline
 import QtQuick
 import QtQuick.Layouts
@@ -23,7 +23,7 @@ Rectangle {
     readonly property color  clrOutline:    "#404040"
     readonly property string fnt:           "JetBrainsMono Nerd Font"
     readonly property string iconFnt:       "Phosphor-Bold"
-    // Mismos codepoints que Icons.qml de ambxst (Phosphor-Bold)
+    // Mismos codepoints que Icons.qml de sadrach34 (Phosphor-Bold)
     readonly property string icPlay:        "\ue3d0"
     readonly property string icPause:       "\ue39e"
     readonly property string icStop:        "\ue46c"
@@ -112,7 +112,7 @@ Rectangle {
             realSeekBar.value = (hasActivePlayer && length > 0) ? position / length : 0
     }
 
-    // Igual que getPlayerIcon() en ambxst (usa HTML font tag para app-icons)
+    // Igual que getPlayerIcon() en sadrach34 (usa HTML font tag para app-icons)
     function getPlayerIcon(p) {
         if (!p) return player.icPlayer
         var n = ((p.desktopEntry ?? "") + (p.identity ?? "")).toLowerCase()
@@ -143,7 +143,7 @@ Rectangle {
 
     // ══════════════════════════════════════════════════════════════════════
     // Fondo: blur del arte + full-art con máscara invertida (borde de arte)
-    // -- Idéntico a ambxst --
+    // -- Idéntico a sadrach34 --
     // ══════════════════════════════════════════════════════════════════════
 
     Image {
@@ -181,7 +181,7 @@ Rectangle {
     }
 
     // Arte completo renderizado sólo FUERA de la máscara interior
-    // → aparece como borde/frame de arte igual que en ambxst
+    // → aparece como borde/frame de arte igual que en sadrach34
     MultiEffect {
         anchors.fill: parent; source: backgroundArtFull
         maskEnabled: true; maskSource: innerAreaMask
@@ -191,7 +191,7 @@ Rectangle {
     }
 
     // ══════════════════════════════════════════════════════════════════════
-    // Controles: ColumnLayout centrado (idéntico a ambxst)
+    // Controles: ColumnLayout centrado (idéntico a sadrach34)
     // ══════════════════════════════════════════════════════════════════════
 
     ColumnLayout {
@@ -489,7 +489,7 @@ Rectangle {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // Overlay de la lista de players (igual al de ambxst)
+    // Overlay de la lista de players (igual al de sadrach34)
     // ══════════════════════════════════════════════════════════════════════════
     Item {
         id: overlayLayer
@@ -546,7 +546,7 @@ Rectangle {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // MediaIconButton — igual al componente MediaIconButton de ambxst
+    // MediaIconButton — igual al componente MediaIconButton de sadrach34
     // ══════════════════════════════════════════════════════════════════════════
     component MediaIconButton: Text {
         property string icon: ""

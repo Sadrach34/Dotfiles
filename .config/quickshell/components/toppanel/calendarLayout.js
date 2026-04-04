@@ -1,4 +1,4 @@
-// Copia directa de ambxst/modules/widgets/dashboard/widgets/calendar/layout.js
+// Copia directa de sadrach34/modules/widgets/dashboard/widgets/calendar/layout.js
 var weekDays = [
   // MONDAY IS THE FIRST DAY OF THE WEEK
   { day: "Mo", today: 0 },

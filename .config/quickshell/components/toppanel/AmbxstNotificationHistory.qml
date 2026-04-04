@@ -1,5 +1,5 @@
 // AmbxstNotificationHistory.qml
-// Port de ambxst's NotificationHistory widget
+// Port de sadrach34's NotificationHistory widget
 // Usa Quickshell.Services.Notifications (api estándar)
 import QtQuick
 import QtQuick.Layouts
@@ -10,7 +10,7 @@ import Quickshell.Services.Notifications
 Item {
     id: root
 
-    // ── Colores y fuentes (inline, igual que ambxst) ─────────────────────────
+    // ── Colores y fuentes (inline, igual que sadrach34) ─────────────────────────
     readonly property color clrPane:    "#1a1a1a"
     readonly property color clrInBg:    "#222222"
     readonly property color clrBorder:  "#2a2a2a"

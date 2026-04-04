@@ -1,5 +1,5 @@
-// AmbxstUserInfo.qml — port 1:1 de ambxst/modules/widgets/defaultview/UserInfo.qml
-// Avatar 24×24 + texto user@host (oculto por defecto, igual que ambxst)
+// AmbxstUserInfo.qml — port 1:1 de sadrach34/modules/widgets/defaultview/UserInfo.qml
+// Avatar 24×24 + texto user@host (oculto por defecto, igual que sadrach34)
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -10,7 +10,7 @@ Item {
     implicitWidth: avatarClip.width
     implicitHeight: 40
 
-    // ── Nombre del host via Process (igual que ambxst) ───────────────────────
+    // ── Nombre del host via Process (igual que sadrach34) ───────────────────────
     Process {
         id: hostnameProcess
         command: ["hostname"]
@@ -42,7 +42,7 @@ Item {
                     anchors.centerIn: parent
                     width:  24
                     height: 24
-                    radius: 16      // Styling.radius(0) en ambxst
+                    radius: 16      // Styling.radius(0) en esta variante
                     clip:   true
                     color:  "#2a2a2a"   // fondo mientras carga la imagen
 
@@ -54,7 +54,7 @@ Item {
                 }
             }
 
-            // Texto user@host — visible: false igual que ambxst
+            // Texto user@host — visible: false igual que sadrach34
             Text {
                 id: userHostText
                 anchors.verticalCenter: parent.verticalCenter
@@ -67,7 +67,7 @@ Item {
                 font.weight:    Font.Bold
                 elide:  Text.ElideRight
                 width:  Math.min(implicitWidth, 180 - 24 - 8)
-                visible: false      // mismo que ambxst: solo muestra el avatar
+                visible: false      // modo compacto: solo muestra el avatar
 
                 Behavior on color { ColorAnimation { duration: 100 } }
             }

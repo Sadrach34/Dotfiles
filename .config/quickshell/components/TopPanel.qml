@@ -7,7 +7,7 @@ import QtQuick.Controls
 import "./dashboard"
 import "./toppanel"
 
-// Panel superior con 5 pestañas — diseño idéntico al dashboard de ambxst
+// Panel superior con 5 pestañas — diseño idéntico al dashboard de sadrach34
 // (columna de tabs a la izquierda + separador + área de contenido)
 //
 //  Tab 0 – widgets   : App launcher / apps frecuentes
@@ -54,10 +54,10 @@ PanelWindow {
     readonly property color clrSubtext: "#606060"
     readonly property color clrAccent:  "#ffffff"
 
-    // ── Tema (ambxst DashTheme) ────────────────────────────────────────────────
+    // ── Tema (sadrach34 DashTheme) ────────────────────────────────────────────────
     DashTheme { id: theme }
 
-    // ── Monitor de recursos del sistema (= SystemResources de ambxst) ──────────
+    // ── Monitor de recursos del sistema (= SystemResources de sadrach34) ──────────
     SysResources { id: sysRes }
     Binding { target: sysRes; property: "active"; value: topPanel.currentTab === 2 && root.topPanelVisible }
 
@@ -103,7 +103,7 @@ PanelWindow {
                     }
                 }
 
-                // ── Indicador de selección con efecto goma (= ambxst) ─────────
+                // ── Indicador de selección con efecto goma (= sadrach34) ─────────
                 Rectangle {
                     id: tabHighlight
                     width:  parent.width
@@ -210,7 +210,7 @@ PanelWindow {
                 height: parent.height
                 clip:   true
 
-                // Cada pestaña: opacity + traslación vertical (= ambxst)
+                // Cada pestaña: opacity + traslación vertical (= sadrach34)
                 component TabPane : Item {
                     required property int paneIndex
                     anchors.fill: parent
@@ -226,7 +226,7 @@ PanelWindow {
                     Behavior on opacity { NumberAnimation { duration: topPanel.animMs; easing.type: Easing.OutQuart } }
                 }
 
-                // ── Tab 0: Widgets — layout idéntico al WidgetsTab de ambxst ──────────
+                // ── Tab 0: Widgets — layout idéntico al WidgetsTab de sadrach34 ──────────
                 // FullPlayer | QuickControls+Calendar | NotificationHistory | Sliders verticales
                 TabPane {
                     id: widgetsPane
@@ -247,7 +247,7 @@ PanelWindow {
                         // ── Col 2: controles rápidos + calendario (ancho fijo) ─
                         Item {
                             id: widgetsColumn
-                            Layout.preferredWidth: ambxstQC.implicitWidth
+                            Layout.preferredWidth: panelQuickControls.implicitWidth
                             Layout.fillHeight: true
 
                             Flickable {
@@ -262,7 +262,7 @@ PanelWindow {
                                     spacing: 8
 
                                     AmbxstQuickControls {
-                                        id: ambxstQC
+                                        id: panelQuickControls
                                         Layout.fillWidth: true
                                     }
 
@@ -308,7 +308,7 @@ PanelWindow {
                     }
                 } // Tab 0
 
-                // ── Tab 1: Fondos de pantalla — igual que ambxst WallpapersTab ──
+                // ── Tab 1: Fondos de pantalla — igual que sadrach34 WallpapersTab ──
                 TabPane {
                     id: wallTab
                     paneIndex: 1
@@ -443,7 +443,7 @@ PanelWindow {
                     Process { id: wallThumbProc; command: ["true"] }
                     Process { id: wallApplyProc2; command: ["true"] }
 
-                    // ── UI — idéntico a ambxst WallpapersTab ────────────────────────────
+                    // ── UI — idéntico a sadrach34 WallpapersTab ────────────────────────────
                     ColumnLayout {
                         anchors.fill: parent
                         spacing: 8
@@ -515,7 +515,7 @@ PanelWindow {
                             }
                         }
 
-                        // FilterBar — chips de texto idénticos a ambxst FilterBar ─────
+                        // FilterBar — chips de texto idénticos a sadrach34 FilterBar ─────
                         Row {
                             Layout.fillWidth: true
                             spacing: 4
@@ -570,7 +570,7 @@ PanelWindow {
                             }
                         }
 
-                        // ── GridView — 7 columnas cuadradas (igual que ambxst) ────────
+                        // ── GridView — 7 columnas cuadradas (igual que sadrach34) ────────
                         Item {
                             id: wallGridContainer
                             Layout.fillWidth:  true
@@ -604,7 +604,7 @@ PanelWindow {
                                         wallTab.selectedIndex = currentIndex
                                 }
 
-                                // ── Highlight — borde + label (= ambxst) ──────────────
+                                // ── Highlight — borde + label (= sadrach34) ──────────────
                                 highlight: Item {
                                     width:  wallGrid.cellWidth
                                     height: wallGrid.cellHeight
@@ -624,7 +624,7 @@ PanelWindow {
                                         visible: wallTab.selectedIndex >= 0
                                         z: 10
 
-                                        // Marco exterior negro (igual que ambxst)
+                                        // Marco exterior negro (igual que sadrach34)
                                         Rectangle {
                                             anchors.fill: parent
                                             anchors.margins: -24
@@ -634,7 +634,7 @@ PanelWindow {
                                             radius: 32
                                             z: 5
 
-                                            // Etiqueta con nombre y scroll (= ambxst)
+                                            // Etiqueta con nombre y scroll (= sadrach34)
                                             Rectangle {
                                                 anchors.bottom: parent.bottom
                                                 anchors.left:   parent.left
@@ -782,7 +782,7 @@ PanelWindow {
                                                 Behavior on color { ColorAnimation { duration: 100 } }
                                             }
 
-                                            // Overlay "CURRENT" — mismo estilo que ambxst
+                                            // Overlay "CURRENT" — mismo estilo que sadrach34
                                             Rectangle {
                                                 anchors.bottom: parent.bottom
                                                 anchors.left:   parent.left
@@ -819,7 +819,7 @@ PanelWindow {
                     }
                 } // Tab 1
 
-                // ── Tab 2: Heartbeat — diseño idéntico al MetricsTab de ambxst ──────
+                // ── Tab 2: Heartbeat — diseño idéntico al MetricsTab de sadrach34 ──────
                 TabPane {
                     id: metricsPane2
                     paneIndex: 2
@@ -854,7 +854,7 @@ PanelWindow {
                         function onRamHistoryChanged()  { if (metricsPane2.active) metricChart.requestPaint() }
                     }
 
-                    // ResourceItem — copia exacta de ambxst ResourceItem.qml
+                    // ResourceItem — copia exacta de sadrach34 ResourceItem.qml
                     component ResBar : Item {
                         property string icon: ""
                         property real   value: 0.0
@@ -896,12 +896,12 @@ PanelWindow {
                         }
                     } // ResBar
 
-                    // ── copia exacta de ambxst MetricsTab RowLayout raíz ──────────
+                    // ── copia exacta de sadrach34 MetricsTab RowLayout raíz ──────────
                     RowLayout {
                         anchors.fill: parent
                         spacing: 8
 
-                        // Left panel - Resources (width 250 = ambxst)
+                        // Left panel - Resources (width 250 = sadrach34)
                         Rectangle {
                             Layout.fillHeight: true
                             Layout.preferredWidth: 250
@@ -911,7 +911,7 @@ PanelWindow {
                                 anchors.fill: parent
                                 spacing: 2
 
-                                // User info section — copia exacta de ambxst
+                                // User info section — copia exacta de sadrach34
                                 RowLayout {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: 16
@@ -991,7 +991,7 @@ PanelWindow {
                                     }
                                 }
 
-                                // "System" separator — copia exacta de ambxst
+                                // "System" separator — copia exacta de sadrach34
                                 RowLayout {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: 16
@@ -1007,7 +1007,7 @@ PanelWindow {
                                     Rectangle { Layout.preferredHeight: 1; Layout.fillWidth: true; color: topPanel.clrBorder }
                                 }
 
-                                // Resource bars — copia exacta de ambxst
+                                // Resource bars — copia exacta de sadrach34
                                 Flickable {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
@@ -1094,7 +1094,7 @@ PanelWindow {
                             } // ColumnLayout
                         } // Left rect
 
-                        // Right panel — Chart (copia exacta de ambxst)
+                        // Right panel — Chart (copia exacta de sadrach34)
                         ColumnLayout {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
@@ -1217,7 +1217,7 @@ PanelWindow {
                                 } // inner rect
                             } // chart rect
 
-                            // Controls bar (height 48) — copia exacta de ambxst
+                            // Controls bar (height 48) — copia exacta de sadrach34
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 48
@@ -1313,7 +1313,7 @@ PanelWindow {
                     } // RowLayout main
                 } // Tab 2
 
-                // ── Tab 3: Asistente IA (Ollama) — layout idéntico a ambxst AssistantTab ──
+                // ── Tab 3: Asistente IA (Ollama) — layout idéntico a sadrach34 AssistantTab ──
                 TabPane {
                     id: aiTab
                     paneIndex: 3
@@ -1455,12 +1455,12 @@ PanelWindow {
                         aiWriteProc.jsonBody = body
                     }
 
-                    // ── UI — idéntico visualmente a ambxst AssistantTab ───────
+                    // ── UI — idéntico visualmente a sadrach34 AssistantTab ───────
                     RowLayout {
                         anchors.fill: parent
                         spacing: 0
 
-                        // ── Sidebar colapsable (= ambxst) ─────────────────────
+                        // ── Sidebar colapsable (= sadrach34) ─────────────────────
                         Item {
                             id: aiSidebar
                             Layout.fillHeight: true
@@ -1587,7 +1587,7 @@ PanelWindow {
                             } // Rectangle sidebar bg
                         } // Item sidebar
 
-                        // ── Área principal (= ambxst mainChatArea) ────────────
+                        // ── Área principal (= sadrach34 mainChatArea) ────────────
                         Item {
                             id: aiMainArea
                             Layout.fillWidth: true
@@ -1595,7 +1595,7 @@ PanelWindow {
 
                             property bool isWelcome: aiTab.messages.length === 0
 
-                            // Pantalla de bienvenida (centrada, = ambxst)
+                            // Pantalla de bienvenida (centrada, = sadrach34)
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 anchors.verticalCenterOffset: -50
@@ -1620,7 +1620,7 @@ PanelWindow {
                                 anchors.fill: parent
                                 spacing: 8
 
-                                // ListView de mensajes (= ambxst chatView)
+                                // ListView de mensajes (= sadrach34 chatView)
                                 ListView {
                                     id: aiMsgView
                                     visible: !aiMainArea.isWelcome
@@ -1677,7 +1677,7 @@ PanelWindow {
                                         }
                                     }
 
-                                    // Tres puntos de carga (= ambxst footer)
+                                    // Tres puntos de carga (= sadrach34 footer)
                                     footer: Item {
                                         width: aiMsgView.width; height: 40
                                         visible: aiTab.isLoading
@@ -1703,7 +1703,7 @@ PanelWindow {
                                 } // ListView mensajes
                             } // ColumnLayout principal
 
-                            // Input flotante (= ambxst inputContainer)
+                            // Input flotante (= sadrach34 inputContainer)
                             Item {
                                 id: aiFloatInput
                                 height: 52
@@ -1786,7 +1786,7 @@ PanelWindow {
                                 }
                             } // aiFloatInput
 
-                            // Nombre del modelo debajo del input (bienvenida, = ambxst)
+                            // Nombre del modelo debajo del input (bienvenida, = sadrach34)
                             Text {
                                 anchors.top: aiFloatInput.bottom; anchors.topMargin: 8
                                 anchors.horizontalCenter: aiFloatInput.horizontalCenter

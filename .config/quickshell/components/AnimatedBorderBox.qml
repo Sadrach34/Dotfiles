@@ -1,7 +1,7 @@
 import QtQuick
 
 // Animated border-drawing effect that traces all four edges
-// Direct port from piixident project
+// Direct port from sadrach34 project
 Item {
   id: root
   anchors.fill: parent

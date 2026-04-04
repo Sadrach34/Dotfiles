@@ -1,5 +1,5 @@
 #!/bin/bash
-# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+# /* ---- 💫 https://github.com/sadrach34 💫 ---- */  ##
 # This is for custom version of waybar idle_inhibitor which activates / deactivates hypridle instead
 
 PROCESS="hypridle"

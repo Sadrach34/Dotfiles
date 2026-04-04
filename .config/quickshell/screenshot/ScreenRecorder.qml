@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Copia de ambxst/modules/services/ScreenRecorder.qml
+// Copia de sadrach34/modules/services/ScreenRecorder.qml
 // Única diferencia: SuspendManager.isSuspending eliminado (no existe en este módulo)
 // El statusTimer corre siempre para detectar instancias externas de gpu-screen-recorder
 

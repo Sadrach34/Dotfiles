@@ -1,5 +1,5 @@
 // Servicio de monitoreo del sistema — wrapper del script system_monitor.py
-// Funciona igual que el SystemResources de ambxst pero sin sus módulos.
+// Funciona igual que el SystemResources de sadrach34 pero sin sus módulos.
 // Uso: SysResources { id: sysRes }  →  sysRes.cpuUsage, sysRes.cpuHistory, etc.
 import QtQuick
 import Quickshell

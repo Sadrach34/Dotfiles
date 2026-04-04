@@ -193,5 +193,5 @@ exec-once = $SwwwRandom $wallDIR
 
 ---
 
-**Autor**: Basado en JaKooLit's Hyprland-Dots  
+**Autor**: Basado en sadrach34's dotfiles  
 **Fecha**: Enero 2026

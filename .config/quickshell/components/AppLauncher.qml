@@ -8,7 +8,7 @@ import QtQuick.Controls
 import QtQuick.Shapes
 
 // Full-screen app launcher with parallelogram slice UI
-// Adapted from piixident project for Hyprland
+// Adapted from sadrach34 project for Hyprland
 Scope {
   id: appLauncher
 

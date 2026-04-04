@@ -407,7 +407,7 @@ Scope {
             }
             onSourceChanged: { opacity = 0; fadeFullRes.stop() }
           }
-          // Reproducción en vivo para videos (igual que piixident)
+          // Reproducción en vivo para videos (igual que sadrach34)
           Loader {
             id: videoLoader
             anchors.fill: parent
