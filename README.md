@@ -60,10 +60,14 @@ El instalador ahora es reutilizable para cualquier PC y soporta flujo de actuali
 ![TopPanel1](./assets/screenshots/top_panel1.png)
 ![TopPanel2](./assets/screenshots/top_panel2.png)
 ![TopPanel3](./assets/screenshots/top_panel3.png)
+![TopPanel4](./assets/screenshots/top_panel4.png)
+![TopPanel5](./assets/screenshots/top_panel5.png)
+![Dashboard](./assets/screenshots/dashboard.png)
 
 ### App launcher
 
-![AppLauncher](./assets/screenshots/app-launcher.png)
+![AppLauncher](./assets/screenshots/app_launcher.png)
+![AppLauncher](./assets/screenshots/app_selector.png)
 
 ### Wallpaper picker
 
