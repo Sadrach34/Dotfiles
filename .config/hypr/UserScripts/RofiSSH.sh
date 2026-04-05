@@ -91,7 +91,7 @@ toggle_telegram_bot() {
     # Si está detenido, iniciarlo
     send_ssh_command "pkill -f 'bot_main.py' 2>/dev/null"
     sleep 1
-    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_IP" "cd /home/sadrach/Bots/python_bot && nohup ./venv/bin/python bot_main.py > /dev/null 2>&1 &" &
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_IP" "cd /home/$SERVER_USER/Bots/python_bot && nohup ./venv/bin/python bot_main.py > /dev/null 2>&1 &" &
     notify-send "🤖 Iniciando bot de Telegram (Finanzas)..."
   fi
 }
@@ -114,13 +114,13 @@ toggle_pos_script() {
   
   if [ "$pos_running" = "running" ]; then
     # Si está corriendo, apagarlo
-    send_ssh_command "bash /home/sadrach/Bots/python_bot/pagina_web/detener_pos.sh"
+    send_ssh_command "bash /home/$SERVER_USER/Bots/python_bot/pagina_web/detener_pos.sh"
     notify-send "🛑 Cerrando sistema POS en el servidor..."
   else
     # Si está detenido, iniciarlo
     send_ssh_command "pkill -f 'iniciar_pos.sh' 2>/dev/null; pkill -f 'flask' 2>/dev/null"
     sleep 1
-    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_IP" "nohup bash /home/sadrach/Bots/python_bot/pagina_web/iniciar_pos.sh > /dev/null 2>&1 &" &
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_IP" "nohup bash /home/$SERVER_USER/Bots/python_bot/pagina_web/iniciar_pos.sh > /dev/null 2>&1 &" &
     notify-send "🐍 Iniciando sistema POS en el servidor..."
     sleep 3 && xdg-open "http://$SERVER_IP:5000" &
   fi
