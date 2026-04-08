@@ -8,6 +8,33 @@ mDIR="$HOME/Music/"
 iDIR="$HOME/.config/swaync/icons"
 rofi_theme="$HOME/.config/rofi/config-rofi-Beats.rasi"
 rofi_theme_1="$HOME/.config/rofi/config-rofi-Beats-menu.rasi"
+mpris_script=""
+
+resolve_mpris_script() {
+  local candidate
+  for candidate in \
+    "/etc/mpv/scripts/mpris.so" \
+    "/etc/mpv/scripts/mpris.lua" \
+    "/usr/lib/mpv/scripts/mpris.so" \
+    "/usr/lib/mpv/scripts/mpris.lua" \
+    "$HOME/.config/mpv/scripts/mpris.so" \
+    "$HOME/.config/mpv/scripts/mpris.lua"; do
+    if [[ -f "$candidate" ]]; then
+      mpris_script="$candidate"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+mpv_run() {
+  local args=()
+  if [[ -n "$mpris_script" ]]; then
+    args+=("--script=$mpris_script")
+  fi
+  mpv "${args[@]}" "$@"
+}
 
 # Online Stations. Edit as required
 declare -A online_music=(
@@ -62,7 +89,7 @@ play_local_music() {
       fi
       clean_socket
 	    notification "$choice"
-      mpv --script=/etc/mpv/scripts/mpris.so --input-ipc-server=/tmp/mpvsocket --playlist-start="$i" --loop-playlist --vid=no --no-audio-display --audio-device=auto --ao=pulse,alsa,  "${local_music[@]}"
+      mpv_run --input-ipc-server=/tmp/mpvsocket --playlist-start="$i" --loop-playlist --vid=no --no-audio-display --audio-device=auto --ao=pipewire,pulse,alsa "${local_music[@]}"
 
       break
     fi
@@ -78,7 +105,7 @@ shuffle_local_music() {
   notification "Shuffle Play local music"
 
   # Play music in $mDIR on shuffle
-  mpv --script=/etc/mpv/scripts/mpris.so --input-ipc-server=/tmp/mpvsocket --shuffle --loop-playlist --vid=no --no-audio-display --audio-device=auto --ao=pulse,alsa, "$mDIR"
+  mpv_run --input-ipc-server=/tmp/mpvsocket --shuffle --loop-playlist --vid=no --no-audio-display --audio-device=auto --ao=pipewire,pulse,alsa "$mDIR"
 }
 
 # Main function for playing online music
@@ -102,7 +129,7 @@ play_online_music() {
   # Play the selected online music using mpv
   # Remove --shuffle for playlists, let the playlist play in order
   # Use cookies from browser and Android client to avoid YouTube bot detection
-  mpv --script=/etc/mpv/scripts/mpris.so --shuffle --input-ipc-server=/tmp/mpvsocket --vid=no --no-audio-display --audio-device=auto --ao=pipewire,pulse,alsa \
+  mpv_run --shuffle --input-ipc-server=/tmp/mpvsocket --vid=no --no-audio-display --audio-device=auto --ao=pipewire,pulse,alsa \
     --ytdl-raw-options=cookies-from-browser=firefox \
     --ytdl-raw-options=extractor-args="youtube:player_client=android" \
     --user-agent="Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.230 Mobile Safari/537.36" \
@@ -151,6 +178,8 @@ previous_track() {
 }
 
 # Check if music is playing and show appropriate menu
+resolve_mpris_script || notify-send -u low -i "$iDIR/music.png" "RofiBeats" "mpv-mpris no encontrado; se continua sin integración MPRIS"
+
 if music_playing; then
   user_choice=$(printf "%s\n" \
     "⏯️  Pause/Play" \
