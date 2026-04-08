@@ -31,6 +31,7 @@ MODE="auto"
 WITH_ANIMATIONS="auto"      # auto|yes|no
 WITH_GAMER="auto"           # auto|yes|no
 WITH_PROGRAMMER="auto"      # auto|yes|no
+WITH_LAPTOP="auto"          # auto|yes|no
 
 SDDM_THEME_NAME="sddm-astronaut-theme"
 SDDM_THEME_VARIANT="black_hole"
@@ -45,6 +46,8 @@ Opciones:
   --update           Forzar modo actualizacion
   --yes, -y          No pedir confirmaciones (acepta todo por defecto)
   --skip-packages    No instalar paquetes
+  --laptop           Activar ajustes para laptop (Waybar con bateria)
+  --no-laptop        Desactivar ajustes de laptop
   --animations       Activar stack visual completo
   --no-animations    Desactivar efectos visuales (Hyprland/Quickshell SI se instalan)
   --gamer            Activar modo gamer
@@ -65,6 +68,8 @@ while [[ $# -gt 0 ]]; do
     --update) MODE="update" ;;
     --yes|-y) ASSUME_YES=true ;;
     --skip-packages) SKIP_PACKAGES=true ;;
+    --laptop) WITH_LAPTOP="yes" ;;
+    --no-laptop) WITH_LAPTOP="no" ;;
     --animations) WITH_ANIMATIONS="yes" ;;
     --no-animations) WITH_ANIMATIONS="no" ;;
     --gamer) WITH_GAMER="yes" ;;
@@ -116,6 +121,14 @@ ask_yes_no() {
 }
 
 select_optional_modules() {
+  if [[ "$WITH_LAPTOP" == "auto" ]]; then
+    if ask_yes_no "Es laptop? (activar bateria en Waybar)" false; then
+      WITH_LAPTOP="yes"
+    else
+      WITH_LAPTOP="no"
+    fi
+  fi
+
   if [[ "$WITH_ANIMATIONS" == "auto" ]]; then
     if ask_yes_no "Instalar animaciones completas?" true; then
       WITH_ANIMATIONS="yes"
@@ -259,7 +272,8 @@ install_core_desktop() {
   section "Core desktop (siempre)"
   pacman_install \
     hyprland hypridle hyprlock \
-    hyprpolkitagent xdg-desktop-portal-hyprland
+    hyprpolkitagent xdg-desktop-portal-hyprland \
+    waybar swaync awww
 
   ensure_yay
   install_quickshell
@@ -278,7 +292,6 @@ install_sddm_like_sadrach() {
   local src_metadata=""
   local metadata="$dst/metadata.desktop"
   local selected_variant="$SDDM_THEME_VARIANT"
-  local used_stow=false
 
   if [[ -d "$stow_theme_src" ]]; then
     theme_src="$stow_theme_src"
@@ -298,22 +311,11 @@ install_sddm_like_sadrach() {
     [[ -n "$selected_variant" ]] || selected_variant="$SDDM_THEME_VARIANT"
   fi
 
-  if [[ "$theme_src" == "$stow_theme_src" ]] && command -v stow >/dev/null 2>&1; then
-    if sudo stow -d "$REPO_DIR" -t / "$SDDM_STOW_PACKAGE"; then
-      used_stow=true
-      ok "Tema SDDM desplegado con stow ($SDDM_STOW_PACKAGE)"
-    else
-      warn "stow fallo para $SDDM_STOW_PACKAGE, aplicando copia directa"
-    fi
-  fi
-
-  if ! $used_stow; then
-    sudo mkdir -p "$dst"
-    if [[ "$theme_src" != "$dst" ]]; then
-      sudo rsync -a --delete --exclude '.git/' "$theme_src/" "$dst/"
-    else
-      info "Tema ya presente en $dst, se mantiene tal cual"
-    fi
+  sudo mkdir -p "$dst"
+  if [[ "$theme_src" != "$dst" ]]; then
+    sudo rsync -a --delete --exclude '.git/' "$theme_src/" "$dst/"
+  else
+    info "Tema ya presente en $dst, se mantiene tal cual"
   fi
   ok "Tema instalado: $dst"
 
@@ -324,14 +326,12 @@ install_sddm_like_sadrach() {
     fi
   fi
 
-  if ! $used_stow; then
-    echo "[Theme]
+  echo "[Theme]
     Current=$SDDM_THEME_NAME" | sudo tee /etc/sddm.conf >/dev/null
 
-    sudo mkdir -p /etc/sddm.conf.d
-    echo "[General]
+  sudo mkdir -p /etc/sddm.conf.d
+  echo "[General]
     InputMethod=qtvirtualkeyboard" | sudo tee /etc/sddm.conf.d/virtualkbd.conf >/dev/null
-  fi
 
   if [[ -f "$metadata" && -n "$selected_variant" ]]; then
     sudo sed -i "s|^ConfigFile=.*|ConfigFile=Themes/${selected_variant}.conf|" "$metadata"
@@ -354,7 +354,7 @@ install_animation_stack() {
   section "Stack visual y animaciones"
 
   pacman_install \
-    waybar swaync swww wlsunset \
+    wlsunset \
     nwg-displays nwg-look \
     qt5ct kvantum \
     matugen wallust \
@@ -596,7 +596,80 @@ apply_dotfiles() {
   if [[ -d "$REPO_DIR/wallpapers" ]]; then
     mkdir -p "$HOME/Pictures/wallpapers"
     rsync -a "$REPO_DIR/wallpapers/" "$HOME/Pictures/wallpapers/"
+
+    # keep legacy compatibility for tools expecting ~/wallpaper
+    mkdir -p "$HOME/wallpaper"
+    rsync -a "$REPO_DIR/wallpapers/" "$HOME/wallpaper/"
     ok "Wallpapers sincronizados"
+  fi
+}
+
+configure_terminal_best_effort() {
+  section "Terminal (kitty + zsh)"
+
+  local kitty_conf="$HOME/.config/kitty/kitty.conf"
+  if [[ -f "$kitty_conf" ]]; then
+    if grep -q '^[[:space:]]*shell[[:space:]]\+' "$kitty_conf"; then
+      sed -Ei 's|^[[:space:]]*shell[[:space:]]+.*$|shell /usr/bin/zsh|' "$kitty_conf"
+    else
+      printf '\n# fuerza zsh al abrir kitty\nshell /usr/bin/zsh\n' >> "$kitty_conf"
+    fi
+    ok "kitty configurado para abrir zsh"
+  else
+    warn "No existe $kitty_conf"
+  fi
+}
+
+configure_waybar_laptop_best_effort() {
+  if [[ "$WITH_LAPTOP" != "yes" ]]; then
+    return
+  fi
+
+  section "Config laptop para Waybar"
+
+  local src="$REPO_DIR/.config/waybar/config-laptop"
+  local dst="$HOME/.config/waybar/config"
+
+  if [[ ! -f "$src" ]]; then
+    warn "No existe config laptop de Waybar en $src"
+    return
+  fi
+
+  backup_target "$src" "$dst"
+  ok "Waybar modo laptop aplicado (modulo bateria visible)"
+}
+
+configure_wallpaper_backend_best_effort() {
+  section "Wallpaper backend (awww)"
+
+  local startup_file="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
+  local wall_dir="$HOME/Pictures/wallpapers"
+  local wall_current="$HOME/.config/hypr/wallpaper_effects/.wallpaper_current"
+  local rofi_current="$HOME/.config/rofi/.current_wallpaper"
+  local first_wall=""
+
+  if [[ -f "$startup_file" ]]; then
+    if grep -q '^[[:space:]]*exec-once[[:space:]]*=[[:space:]]*swww-daemon' "$startup_file"; then
+      sed -Ei 's|^[[:space:]]*exec-once[[:space:]]*=[[:space:]]*swww-daemon[[:space:]]+--format[[:space:]]+xrgb[[:space:]]*$|exec-once = awww-daemon|' "$startup_file"
+      ok "Startup_Apps.conf ajustado a awww-daemon"
+    elif ! grep -q '^[[:space:]]*exec-once[[:space:]]*=[[:space:]]*awww-daemon' "$startup_file"; then
+      echo 'exec-once = awww-daemon' >> "$startup_file"
+      ok "Linea awww-daemon agregada a Startup_Apps.conf"
+    fi
+  else
+    warn "No existe $startup_file, se omite ajuste de backend"
+  fi
+
+  mkdir -p "$(dirname "$wall_current")" "$(dirname "$rofi_current")"
+  if [[ ! -e "$wall_current" ]]; then
+    first_wall="$(find "$wall_dir" -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.gif' \) | head -n1 || true)"
+    if [[ -n "$first_wall" ]]; then
+      ln -sf "$first_wall" "$wall_current"
+      ln -sf "$first_wall" "$rofi_current"
+      ok "Wallpaper inicial configurado: $first_wall"
+    else
+      warn "No se encontraron imagenes en $wall_dir para fijar wallpaper inicial"
+    fi
   fi
 }
 
@@ -622,8 +695,20 @@ enable_services_best_effort() {
 set_default_shell() {
   section "Shell por defecto"
   if command -v zsh >/dev/null 2>&1; then
-    if [[ "$SHELL" != "$(command -v zsh)" ]]; then
-      chsh -s "$(command -v zsh)" || warn "No se pudo cambiar shell automaticamente"
+    local zsh_bin current_shell
+    zsh_bin="$(command -v zsh)"
+    current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+
+    if [[ "$current_shell" != "$zsh_bin" ]]; then
+      if sudo usermod -s "$zsh_bin" "$USER"; then
+        ok "Shell por defecto actualizado a zsh (usermod)"
+      elif sudo chsh -s "$zsh_bin" "$USER"; then
+        ok "Shell por defecto actualizado a zsh (chsh)"
+      elif chsh -s "$zsh_bin"; then
+        ok "Shell por defecto actualizado a zsh (user)"
+      else
+        warn "No se pudo cambiar shell automaticamente"
+      fi
     else
       ok "zsh ya es shell por defecto"
     fi
@@ -777,6 +862,7 @@ main() {
   local pkgm
   pkgm="$(detect_pkg_manager)"
   info "Gestor detectado: $pkgm"
+  info "Laptop: $WITH_LAPTOP"
   info "Animaciones: $WITH_ANIMATIONS"
   info "Modo gamer: $WITH_GAMER"
   info "Modo programador: $WITH_PROGRAMMER"
@@ -816,6 +902,9 @@ main() {
   fi
 
   apply_dotfiles
+  configure_terminal_best_effort
+  configure_waybar_laptop_best_effort
+  configure_wallpaper_backend_best_effort
   if [[ "$pkgm" == "pacman" ]]; then
     install_repo_update_notifier_pacman
   fi
@@ -824,8 +913,8 @@ main() {
   set_default_shell
 
   mkdir -p "$(dirname "$MARKER_FILE")"
-  printf "mode=%s\ndate=%s\nrepo=%s\nanimations=%s\ngamer=%s\nprogrammer=%s\n" \
-    "$MODE" "$(date -Iseconds)" "$REPO_DIR" "$WITH_ANIMATIONS" "$WITH_GAMER" "$WITH_PROGRAMMER" > "$MARKER_FILE"
+  printf "mode=%s\ndate=%s\nrepo=%s\nlaptop=%s\nanimations=%s\ngamer=%s\nprogrammer=%s\n" \
+    "$MODE" "$(date -Iseconds)" "$REPO_DIR" "$WITH_LAPTOP" "$WITH_ANIMATIONS" "$WITH_GAMER" "$WITH_PROGRAMMER" > "$MARKER_FILE"
 
   echo
   ok "Instalacion completada"
