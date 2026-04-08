@@ -1,0 +1,92 @@
+name: Tarea Menor
+description: Crea una tarea menor para tareas de mantenimiento, configuración o limpieza que no afectan la lógica principal de la aplicación.
+title: "[Chore]: "
+labels: [chore]
+assignees: 
+  - ""  # Asignación manual o con GitHub Actions
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🧹 Tarea Menor
+        Completa este formulario con los detalles de la tarea menor que estás creando. Estas tareas suelen estar relacionadas con la configuración, limpieza o mantenimiento, sin afectar la lógica principal del sistema.
+
+  - type: input
+    id: chore-summary
+    attributes:
+      label: 📌 Resumen de la Tarea
+      placeholder: "Ej: Limpiar archivos temporales no utilizados"
+      description: |
+        Proporciona un resumen breve de la tarea que se realizará.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📜 Descripción Detallada
+      description: |
+        Explica detalladamente qué se va a hacer en esta tarea.  
+        Esto puede incluir configuraciones, limpieza de código, eliminación de archivos temporales, actualizaciones menores, etc.
+        Consulta más detalles sobre cómo describir tareas en [Tareas de Mantenimiento – GitHub Docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-issues).
+      placeholder: |
+        Esta tarea consiste en eliminar archivos temporales que ya no son necesarios y hacer limpieza en la configuración de la aplicación.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🎯 Prioridad
+      description: |
+        ¿Qué tan urgente es la tarea?
+        Consulta más sobre cómo priorizar tareas en [Priorización de Tareas – Atlassian](https://www.atlassian.com/agile/project-management/bug-tracking).
+      options:
+        - Alta (requiere atención inmediata)
+        - Media (puede esperar, pero debe resolverse pronto)
+        - Baja (no urgente, pero necesario para el mantenimiento)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: 🌍 Impacto de la Tarea
+      description: |
+        ¿Qué impacto tendrá esta tarea en el sistema?
+        Para más detalles sobre cómo medir el impacto, consulta [Medición del Impacto – TechTarget](https://www.techtarget.com/).
+      options:
+        - Bajo (no afecta la funcionalidad)
+        - Medio (afecta áreas no críticas)
+        - Alto (afecta partes del sistema que podrían mejorar su rendimiento)
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 🛠️ Entorno de la Tarea
+      placeholder: "Ej: Entorno de desarrollo, servidor de pruebas"
+      description: |
+        Indica en qué entorno se llevará a cabo esta tarea.
+        Consulta más sobre entornos de desarrollo en [Entornos de Desarrollo – GitHub Docs](https://docs.github.com/en/github/getting-started-with-github/setting-up-your-environment).
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Proporciona cualquier otra información relevante sobre la tarea que puede ayudar a clarificar la necesidad de la misma.  
+        Esto puede incluir cambios previos, razones para la limpieza o mejoras en la configuración.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo
+      description: |
+        Por favor, confirma que esta tarea está lista para ser procesada según nuestra [Definición de Listo](https://microsoft.github.io/code-with-engineering-playbook/agile-development/team-agreements/definition-of-ready/).
+      options:
+        - label: Confirmo que esta tarea contiene suficiente información para ser realizada.
+          required: true

@@ -1,0 +1,90 @@
+name: Cambio en Documentación
+description: Crea una tarea para cualquier cambio, mejora o corrección en la documentación del proyecto.
+title: "[Docs]: "
+labels: [docs]
+assignees: 
+  - ""  # Asignación manual o con GitHub Actions
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📚 Cambio en la Documentación
+        Completa este formulario con los detalles sobre el cambio que necesitas realizar en la documentación del proyecto. Esto incluye correcciones, actualizaciones o mejoras.
+
+  - type: input
+    id: docs-summary
+    attributes:
+      label: 📌 Resumen del Cambio
+      placeholder: "Ej: Corregir la sección de instalación en README"
+      description: |
+        Proporciona un resumen breve del cambio o corrección que se debe realizar en la documentación.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📜 Descripción Detallada
+      description: |
+        Explica en detalle qué es lo que se necesita cambiar en la documentación. Esto puede incluir corrección de errores tipográficos, actualización de versiones, adición de nuevas secciones, etc.  
+        Para más detalles sobre cómo redactar cambios en la documentación, consulta [Mejores Prácticas de Documentación](https://www.writethedocs.org/guide/) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        Este cambio consiste en corregir la sección de instalación en el archivo README, ya que los pasos no son compatibles con la última versión.
+    validations:
+      required: true
+
+  - type: input
+    id: docs-file
+    attributes:
+      label: 📝 Archivo Afectado
+      placeholder: "Ej: README.md, docs/installation.md"
+      description: |
+        Indica el archivo(s) específico(s) que necesita(n) ser actualizado(s) o corregido(s).  
+        Si no estás seguro, menciona la sección de la documentación que necesitas cambiar.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🎯 Prioridad
+      description: |
+        ¿Qué tan urgente es la actualización de la documentación?  
+        Consulta más sobre cómo priorizar tareas en [Priorización de Tareas – Atlassian](https://www.atlassian.com/agile/project-management/bug-tracking) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Alta (requiere actualización inmediata)
+        - Media (puede esperar, pero es importante)
+        - Baja (no urgente, pero necesaria para mejorar la claridad)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: 🌍 Impacto del Cambio
+      description: |
+        ¿Qué tan importante es este cambio para la comprensión general del proyecto?
+        Para más detalles sobre cómo medir el impacto de cambios en la documentación, consulta [Impacto en la Documentación](https://www.oreilly.com/library/view/technical-writing-for/9781449321011/ch04.html) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Bajo (el cambio no afecta significativamente a la mayoría de los usuarios)
+        - Medio (el cambio es útil, pero no crítico para todos)
+        - Alto (el cambio es crucial para la comprensión y uso adecuado del proyecto)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Si tienes algún contexto adicional que deba conocerse antes de realizar el cambio, por favor descríbelo aquí. Esto puede incluir detalles sobre por qué se está haciendo el cambio, o referencias a problemas previos.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo
+      description: |
+        Por favor, confirma que esta tarea cumple con nuestra [Definición de Listo](https://microsoft.github.io/code-with-engineering-playbook/agile-development/team-agreements/definition-of-ready/) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - label: Confirmo que esta tarea contiene suficiente información para ser procesada.
+          required: true

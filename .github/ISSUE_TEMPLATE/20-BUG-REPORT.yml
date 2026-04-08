@@ -1,0 +1,161 @@
+name: Reporte de Error
+description: Envía un reporte detallado sobre un error encontrado en la aplicación.
+title: "[Bug]: "
+labels: [bug]
+assignees: 
+  - ""  # Asignación manual o con GitHub Actions
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 Reporte de Error
+        Completa este formulario con la mayor cantidad de detalles posible para que podamos reproducir y corregir el error.
+
+  - type: input
+    id: bug-summary
+    attributes:
+      label: 📌 Resumen del Error
+      placeholder: "Ej: La aplicación se cierra al intentar abrir una imagen"
+      description: |
+        Proporciona un resumen breve del error que has encontrado.
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 🪜 Pasos para Reproducir
+      description: |
+        Detalla los pasos exactos que sigues para reproducir el error.  
+        Si no se puede reproducir, describe las condiciones bajo las cuales ocurre el error.  
+        Más información en [Cómo redactar un buen informe de errores – GitHub Docs](https://docs.github.com/es/issues/tracking-your-work-with-issues/creating-issues/about-issues) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        1. Abrir la aplicación  
+        2. Intentar cargar una imagen desde la galería  
+        3. La aplicación se cierra inesperadamente
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 🧐 Comportamiento Esperado
+      description: |
+        Explica cómo debería funcionar la aplicación si el error no estuviera presente.  
+        Consulta más detalles sobre el comportamiento esperado en [Cómo escribir casos de prueba](https://www.guru99.com/test-case-template.html) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        La aplicación debería cargar la imagen correctamente sin cerrarse.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: 😞 Comportamiento Real
+      description: |
+        Describe lo que sucede cuando ocurre el error.  
+        Es importante ser detallado para que podamos comprender el problema de manera precisa.
+      placeholder: |
+        La aplicación se cierra de forma inesperada cuando intento cargar una imagen desde la galería.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 Severidad del Error
+      description: |
+        ¿Qué tan grave es este error?  
+        Para más detalles sobre la clasificación de errores, consulta [Escala de Severidad de Errores](https://www.testingexcellence.com/severity-levels-in-software-testing/) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Crítico (el error impide el uso de la aplicación)
+        - Alto (el error afecta una funcionalidad importante pero tiene soluciones alternativas)
+        - Medio (el error afecta una funcionalidad menor sin afectar el flujo principal)
+        - Bajo (el error no afecta significativamente la funcionalidad)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🎯 Prioridad
+      description: |
+        ¿Qué tan urgente es la solución de este error?  
+        Más detalles sobre cómo priorizar errores en [Priorización de Errores – Atlassian](https://www.atlassian.com/agile/project-management/bug-tracking) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Alta (requiere solución inmediata)
+        - Media (requiere solución, pero no urgentemente)
+        - Baja (puede esperar)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🌍 Entorno del Error
+      description: |
+        Describe el entorno en el que ocurrió el error. Esto puede incluir:
+        - Sistema operativo y versión
+        - Navegador y versión
+        - Dispositivo (si aplica)
+        - Conexión a internet
+        - Otros detalles importantes
+        Consulta más sobre cómo describir el entorno en [Testing Environments – Testing Excellence](https://www.testingexcellence.com/testing-environment/) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        - Windows 10  
+        - Google Chrome versión 90  
+        - Conexión de red estable
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 🖼️ Capturas de Pantalla / Videos
+      description: |
+        Añade cualquier captura de pantalla o video que ayude a entender mejor el error.  
+        Para más detalles sobre cómo añadir imágenes en GitHub, consulta [Imágenes en Markdown – GitHub Docs](https://docs.github.com/es/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: "Arrastra aquí las imágenes o videos que muestren el error."
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 📜 Registros / Consola
+      description: |
+        Si tienes acceso a los registros de la consola o algún error específico que aparece, compártelo aquí.  
+        Esto puede incluir mensajes de error, trazas de pila, etc.
+        Más detalles sobre cómo encontrar registros en [Cómo obtener los registros de la consola](https://developer.mozilla.org/es/docs/Tools/Web_Console) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        Error de JavaScript: "Uncaught TypeError: Cannot read property 'x' of undefined"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Proporciona cualquier otra información relevante sobre el error o los pasos que has seguido antes de que ocurriera.  
+        Esto puede ayudar a los desarrolladores a identificar patrones y posibles causas del problema.
+    validations:
+      required: false
+
+  - type: input
+    id: reporter-user
+    attributes:
+      label: 🧑‍💻 Usuario que Reportó el Error
+      placeholder: "Ej: juanperez"
+      description: |
+        Proporciona el nombre de usuario o identificador de la persona que reporta el error. Si es el creador del reporte, puede dejar este campo vacío, ya que se auto-asignará automáticamente.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo
+      description: |
+        Por favor, confirma que esta solicitud cumple con nuestra [Definición de Listo](https://microsoft.github.io/code-with-engineering-playbook/agile-development/team-agreements/definition-of-ready/) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - label: Confirmo que esta solicitud contiene suficiente información para ser investigada y corregida.
+          required: true

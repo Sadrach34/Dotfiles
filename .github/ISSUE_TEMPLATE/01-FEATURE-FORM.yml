@@ -1,0 +1,136 @@
+name: Solicitud de Funcionalidad
+description: Envía una propuesta para una nueva funcionalidad o mejora.
+title: "[feat]: "
+labels: [enhancement]
+assignees: 
+  - ${{ github.actor }}  # Asigna automáticamente al creador del formulario
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 Formulario de Solicitud de Funcionalidad
+        Completa este formulario siguiendo las buenas prácticas de desarrollo ágil.
+
+  - type: input
+    id: feature-summary
+    attributes:
+      label: 📌 Resumen de la Funcionalidad
+      placeholder: "Ej: Añadir modo oscuro en la configuración de usuario"
+      description: |
+        Describe brevemente la funcionalidad que estás solicitando.
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 🔍 Problema o Necesidad
+      description: |
+        ¿Qué problema estás tratando de resolver con esta funcionalidad?  
+        Para más detalles, consulta el [enlace oficial sobre el estado del problema](https://www.interaction-design.org/literature/article/how-to-define-a-problem-statement) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        Ej: Los usuarios que trabajan de noche encuentran la interfaz muy brillante, causando molestias visuales.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Criterios de Aceptación
+      description: |
+        Lista las condiciones que deben cumplirse para considerar la funcionalidad como completada.  
+        Para más información, revisa [Acceptance Criteria – Atlassian](https://www.atlassian.com/agile/project-management/user-stories#Acceptance-criteria) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        - [ ] Hay un interruptor visible en la configuración
+        - [ ] Cambiar el interruptor activa el modo oscuro inmediatamente
+        - [ ] La preferencia se guarda y se mantiene entre sesiones
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 🪜 Pasos para Reproducir (si aplica)
+      description: |
+        Si la solicitud mejora o corrige un comportamiento, proporciona pasos detallados para reproducirlo.  
+        Más detalles en [Cómo redactar un buen informe de errores – GitHub Docs](https://docs.github.com/es/issues/tracking-your-work-with-issues/creating-issues/about-issues) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        1. Ir a configuración  
+        2. Observar que no existe una opción para activar el modo oscuro
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🎯 Prioridad
+      description: |
+        Selecciona la importancia de esta funcionalidad.  
+        Más detalles sobre cómo priorizar tareas en [Priorización en Scrum – Scrum.org](https://www.scrum.org/resources/blog/ordering-product-backlog) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Alta (esencial para MVP o flujos críticos)
+        - Media (valiosa pero no urgente)
+        - Baja (interesante, pero no imprescindible)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimation
+    attributes:
+      label: 🧮 Estimación (Escala Fibonacci)
+      description: |
+        Estima el esfuerzo usando puntos de historia según la escala de Fibonacci.  
+        Más información en [Fibonacci Estimation in Agile – Mountain Goat Software](https://www.mountaingoatsoftware.com/blog/why-do-we-use-the-fibonacci-sequence-for-story-points) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - 0 (trivial)
+        - 1 (muy pequeña)
+        - 2 (pequeña)
+        - 3 (media)
+        - 5 (moderadamente compleja)
+        - 8 (compleja)
+        - 13 (muy compleja)
+        - 21 (nivel épico)
+        - ∞ (demasiado grande, necesita dividirse)
+        - ? (incierta)
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: 💡 Valor para el Negocio / Impacto en el Usuario
+      description: |
+        Explica el valor que aporta esta funcionalidad.  
+        Más detalles en [Business Value Definition – Scaled Agile Framework (SAFe)](https://www.scaledagileframework.com/wsjf/) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        Mejora la accesibilidad y reduce la fatiga visual en entornos con poca luz.
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 🖼️ Capturas de Pantalla / Mockups
+      description: |
+        Añade imágenes o referencias visuales para mayor claridad.  
+        Para más detalles, consulta [Imágenes en Markdown – GitHub Docs](https://docs.github.com/es/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: "Arrastra aquí las imágenes o pega enlaces a mockups."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Proporciona cualquier otra información relevante o vínculos relacionados.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo
+      description: |
+        Por favor, confirma que esta solicitud cumple con nuestra [Definición de Listo](https://microsoft.github.io/code-with-engineering-playbook/agile-development/team-agreements/definition-of-ready/) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - label: Confirmo que esta funcionalidad cumple con la Definición de Listo y contiene suficiente detalle para ser estimada e implementada.
+          required: true

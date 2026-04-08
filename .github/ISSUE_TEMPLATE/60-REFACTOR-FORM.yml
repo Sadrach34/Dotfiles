@@ -1,0 +1,89 @@
+name: Reestructuración del Código
+description: Crea una tarea para la reestructuración del código, mejora su legibilidad, optimización o refactorización sin cambiar su funcionalidad.
+title: "[Refactor]: "
+labels: [refactor]
+assignees: 
+  - ""  # Asignación manual o con GitHub Actions
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔧 Reestructuración del Código
+        Completa este formulario con los detalles de la tarea de refactorización del código. Estas tareas suelen involucrar mejoras en la estructura del código, optimización de algoritmos o aumento de la legibilidad, sin cambiar la funcionalidad.
+
+  - type: input
+    id: refactor-summary
+    attributes:
+      label: 📌 Resumen del Refactor
+      placeholder: "Ej: Mejorar la estructura de las funciones de autenticación"
+      description: |
+        Proporciona un resumen breve de lo que se va a refactorizar en el código.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📜 Descripción Detallada
+      description: |
+        Explica en detalle qué parte del código se va a refactorizar y por qué. Esto puede incluir mejorar la legibilidad, optimizar el rendimiento, reducir la duplicación de código, etc.  
+        Para más detalles sobre las buenas prácticas en la refactorización, consulta [Principios de Refactorización](https://refactoring.guru/es/introduccion) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        Este refactor consiste en mejorar la estructura de las funciones de autenticación para que sean más modulares y fáciles de entender.
+    validations:
+      required: true
+
+  - type: input
+    id: affected-files
+    attributes:
+      label: 📝 Archivos Afectados
+      placeholder: "Ej: auth.js, userService.js"
+      description: |
+        Indica los archivos o módulos específicos que van a ser modificados o reestructurados. Esto es importante para que otros miembros del equipo estén al tanto de las áreas que serán afectadas.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 🎯 Prioridad
+      description: |
+        ¿Qué tan urgente es esta tarea de refactorización?
+        Consulta más sobre cómo priorizar tareas en [Priorización de Tareas – Atlassian](https://www.atlassian.com/agile/project-management/bug-tracking) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Alta (requiere atención inmediata)
+        - Media (puede esperar, pero es importante para la salud del código)
+        - Baja (no urgente, pero útil para mantener la calidad del código)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: 🌍 Impacto del Refactor
+      description: |
+        ¿Qué impacto tendrá esta refactorización en la estructura del proyecto?
+        Para más detalles sobre cómo evaluar el impacto, consulta [Impacto de la Refactorización en el Código](https://refactoring.guru/es/faq/impact-of-refactoring) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - Bajo (la refactorización no cambiará de forma significativa la arquitectura general)
+        - Medio (modifica partes importantes del sistema, pero no cambia la funcionalidad)
+        - Alto (impacta una parte clave del sistema, mejorando su rendimiento y mantenimiento)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Si tienes algún contexto adicional que deba conocerse antes de realizar el refactor, por favor descríbelo aquí. Esto puede incluir dependencias específicas, problemas previos, o cualquier detalle que deba ser considerado.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo
+      description: |
+        Por favor, confirma que esta tarea cumple con nuestra [Definición de Listo](https://microsoft.github.io/code-with-engineering-playbook/agile-development/team-agreements/definition-of-ready/) (Haz clic derecho para abrir en una nueva pestaña).
+      options:
+        - label: Confirmo que esta tarea contiene suficiente información para ser procesada.
+          required: true
