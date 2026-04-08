@@ -32,6 +32,10 @@ WITH_ANIMATIONS="auto"      # auto|yes|no
 WITH_GAMER="auto"           # auto|yes|no
 WITH_PROGRAMMER="auto"      # auto|yes|no
 
+SDDM_THEME_NAME="sddm-astronaut-theme"
+SDDM_THEME_VARIANT="black_hole"
+SDDM_STOW_PACKAGE="sddm"
+
 usage() {
   cat <<'HELP'
 Uso: ./install3.sh [opciones]
@@ -261,6 +265,89 @@ install_core_desktop() {
   install_quickshell
 
   ok "Core desktop instalado: Hyprland + Quickshell"
+}
+
+install_sddm_like_sadrach() {
+  section "SDDM igual que tu setup"
+
+  pacman_install sddm qt6-svg qt6-virtualkeyboard qt6-multimedia-ffmpeg
+
+  local stow_theme_src="$REPO_DIR/$SDDM_STOW_PACKAGE/usr/share/sddm/themes/$SDDM_THEME_NAME"
+  local theme_src=""
+  local dst="/usr/share/sddm/themes/$SDDM_THEME_NAME"
+  local src_metadata=""
+  local metadata="$dst/metadata.desktop"
+  local selected_variant="$SDDM_THEME_VARIANT"
+  local used_stow=false
+
+  if [[ -d "$stow_theme_src" ]]; then
+    theme_src="$stow_theme_src"
+  elif [[ -d "/usr/share/sddm/themes/$SDDM_THEME_NAME" ]]; then
+    theme_src="/usr/share/sddm/themes/$SDDM_THEME_NAME"
+  elif [[ -d "$REPO_DIR/$SDDM_THEME_NAME" ]]; then
+    theme_src="$REPO_DIR/$SDDM_THEME_NAME"
+  elif [[ -d "$HOME/$SDDM_THEME_NAME" ]]; then
+    theme_src="$HOME/$SDDM_THEME_NAME"
+  else
+    error "No se encontro tema local $SDDM_THEME_NAME. Colocalo en $REPO_DIR/$SDDM_THEME_NAME o $HOME/$SDDM_THEME_NAME"
+  fi
+
+  src_metadata="$theme_src/metadata.desktop"
+  if [[ -f "$src_metadata" ]]; then
+    selected_variant="$(sed -n 's|^ConfigFile=Themes/\(.*\)\.conf|\1|p' "$src_metadata" | head -n1 || true)"
+    [[ -n "$selected_variant" ]] || selected_variant="$SDDM_THEME_VARIANT"
+  fi
+
+  if [[ "$theme_src" == "$stow_theme_src" ]] && command -v stow >/dev/null 2>&1; then
+    if sudo stow -d "$REPO_DIR" -t / "$SDDM_STOW_PACKAGE"; then
+      used_stow=true
+      ok "Tema SDDM desplegado con stow ($SDDM_STOW_PACKAGE)"
+    else
+      warn "stow fallo para $SDDM_STOW_PACKAGE, aplicando copia directa"
+    fi
+  fi
+
+  if ! $used_stow; then
+    sudo mkdir -p "$dst"
+    if [[ "$theme_src" != "$dst" ]]; then
+      sudo rsync -a --delete --exclude '.git/' "$theme_src/" "$dst/"
+    else
+      info "Tema ya presente en $dst, se mantiene tal cual"
+    fi
+  fi
+  ok "Tema instalado: $dst"
+
+  if [[ -d "$dst/Fonts" ]]; then
+    sudo cp -a "$dst/Fonts/." /usr/share/fonts/
+    if command -v fc-cache >/dev/null 2>&1; then
+      sudo fc-cache -f >/dev/null 2>&1 || warn "No se pudo refrescar cache de fuentes"
+    fi
+  fi
+
+  if ! $used_stow; then
+    echo "[Theme]
+    Current=$SDDM_THEME_NAME" | sudo tee /etc/sddm.conf >/dev/null
+
+    sudo mkdir -p /etc/sddm.conf.d
+    echo "[General]
+    InputMethod=qtvirtualkeyboard" | sudo tee /etc/sddm.conf.d/virtualkbd.conf >/dev/null
+  fi
+
+  if [[ -f "$metadata" && -n "$selected_variant" ]]; then
+    sudo sed -i "s|^ConfigFile=.*|ConfigFile=Themes/${selected_variant}.conf|" "$metadata"
+    ok "Preset SDDM aplicado: $selected_variant"
+  else
+    warn "No se encontro metadata.desktop para fijar preset"
+  fi
+
+  if systemctl list-unit-files | grep -q '^sddm\.service'; then
+    sudo systemctl disable display-manager.service 2>/dev/null || true
+    sudo systemctl enable sddm.service || warn "No se pudo habilitar sddm.service"
+  else
+    warn "sddm.service no disponible aun"
+  fi
+
+  ok "SDDM configurado igual a tu setup local (Astronaut + $selected_variant)"
 }
 
 install_animation_stack() {
@@ -707,6 +794,7 @@ main() {
     if [[ "$pkgm" == "pacman" ]]; then
       install_base_packages_pacman
       install_core_desktop
+      install_sddm_like_sadrach
       install_zsh_stack
 
       if [[ "$WITH_ANIMATIONS" == "yes" ]]; then
