@@ -593,6 +593,11 @@ apply_dotfiles() {
     backup_target "$REPO_DIR/.zshrc" "$HOME/.zshrc"
   fi
 
+  if [[ -f "$REPO_DIR/update.sh" ]]; then
+    backup_target "$REPO_DIR/update.sh" "$HOME/update.sh"
+    chmod +x "$HOME/update.sh" || warn "No se pudo dar permisos de ejecucion a $HOME/update.sh"
+  fi
+
   if [[ -d "$REPO_DIR/wallpapers" ]]; then
     mkdir -p "$HOME/Pictures/wallpapers"
     rsync -a "$REPO_DIR/wallpapers/" "$HOME/Pictures/wallpapers/"
