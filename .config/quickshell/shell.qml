@@ -83,6 +83,7 @@ ShellRoot {
 
     ConfigPanel {
         colors: skwdColors
+        colorService: themeColors
     }
 
     ModernClock {}

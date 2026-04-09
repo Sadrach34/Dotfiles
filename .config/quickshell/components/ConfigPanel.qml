@@ -13,6 +13,7 @@ Scope {
   id: configPanel
 
   property var colors
+  property var colorService
   property bool showing: false
   property string mainMonitor: ""
   property string homeDir: Quickshell.env("HOME")
@@ -25,12 +26,16 @@ Scope {
     { icon: "󰕰", label: "COMPONENTS" },
     { icon: "󰓅", label: "POWER" },
     { icon: "󰸉", label: "WALLPAPER" },
-    { icon: "󱠡", label: "WALLPAPER+" },
     { icon: "󰌹", label: "INTEGRATIONS" },
     { icon: "󰀻", label: "APPS" },
     { icon: "󰔟", label: "INTERVALS" },
     { icon: "󰘳", label: "KEYBINDS" }
   ]
+
+  onCurrentSectionChanged: {
+    if (currentSection < 0) currentSection = 0
+    else if (currentSection >= sections.length) currentSection = sections.length - 1
+  }
 
   property int cardWidth: 1300
   property int cardHeight: 720
@@ -51,6 +56,25 @@ Scope {
   property var appsData: ({})
   property var _appKeys: []
   property string _appSearchFilter: ""
+  property bool _lastSavedBarEnabled: true
+  property string _lastSavedPowerDeviceType: "auto"
+  property string _lastSavedPowerProfile: "performance"
+
+  readonly property color cfgSurfaceColor: (colorService && colorService.hasCustomFilterBarBg)
+    ? Qt.rgba(colorService.filterBarBg.r, colorService.filterBarBg.g, colorService.filterBarBg.b, 0.92)
+    : (colors ? Qt.rgba(colors.surface.r, colors.surface.g, colors.surface.b, 0.88) : Qt.rgba(0.1, 0.06, 0.05, 0.88))
+  readonly property color cfgBorderColor: (colorService && colorService.hasCustomFilterBarBg)
+    ? Qt.rgba(colorService.filterBarActiveBg.r, colorService.filterBarActiveBg.g, colorService.filterBarActiveBg.b, 0.30)
+    : (colors ? Qt.rgba(colors.primary.r, colors.primary.g, colors.primary.b, 0.15) : Qt.rgba(1, 1, 1, 0.1))
+  readonly property color cfgTabSelectedBg: (colorService && colorService.hasCustomFilterBarBg)
+    ? colorService.filterBarActiveBg
+    : (colors ? colors.primary : "#4fc3f7")
+  readonly property color cfgTabIdleBg: (colorService && colorService.hasCustomFilterBarBg)
+    ? Qt.rgba(colorService.filterBarBg.r, colorService.filterBarBg.g, colorService.filterBarBg.b, 0.82)
+    : (colors ? Qt.rgba(colors.surfaceContainer.r, colors.surfaceContainer.g, colors.surfaceContainer.b, 0.7) : Qt.rgba(0.1, 0.12, 0.18, 0.7))
+  readonly property color cfgTabHoverBg: (colorService && colorService.hasCustomFilterBarBg)
+    ? Qt.rgba(colorService.filterBarActiveBg.r, colorService.filterBarActiveBg.g, colorService.filterBarActiveBg.b, 0.42)
+    : (colors ? Qt.rgba(colors.surfaceVariant.r, colors.surfaceVariant.g, colors.surfaceVariant.b, 0.5) : Qt.rgba(1, 1, 1, 0.15))
 
   FileView {
     id: configFile
@@ -87,6 +111,9 @@ Scope {
     if (!text) return
     try {
       configData = JSON.parse(text)
+      _lastSavedBarEnabled = getNested(configData, ["components", "bar", "enabled"], true)
+      _lastSavedPowerDeviceType = getNested(configData, ["power", "deviceType"], "auto")
+      _lastSavedPowerProfile = getNested(configData, ["power", "profile"], "performance")
       configDataChanged()
     } catch (e) {
       console.log("ConfigPanel: Failed to parse config.json:", e)
@@ -173,13 +200,71 @@ Scope {
     }
   }
 
+  function _expandHome(path) {
+    if (!path || typeof path !== "string") return ""
+    if (path.startsWith("~/")) return homeDir + path.substring(1)
+    return path
+  }
+
+  function _applyWaybarEnabled(enabled) {
+    var cfgPath = _expandHome(getNested(configData, ["components", "bar", "waybarConfig"], "~/.config/waybar/config"))
+    var stylePath = _expandHome(getNested(configData, ["components", "bar", "waybarStyle"], "~/.config/waybar/style.css"))
+
+    var cmd = ""
+    if (enabled) {
+      cmd = "if ! pgrep -x waybar >/dev/null; then nohup waybar -c " + JSON.stringify(cfgPath) + " -s " + JSON.stringify(stylePath) + " >/dev/null 2>&1 & fi"
+    } else {
+      cmd = "pkill -x waybar >/dev/null 2>&1 || true"
+    }
+
+    waybarApplyProcess.command = ["bash", "-lc", cmd]
+    waybarApplyProcess.running = true
+  }
+
+  function _applyPowerFromConfig() {
+    var cmd = "if [ -x \"$HOME/.config/hypr/scripts/PowerProfileAuto.sh\" ]; then \"$HOME/.config/hypr/scripts/PowerProfileAuto.sh\" >/dev/null 2>&1 || true; fi"
+    powerApplyProcess.command = ["bash", "-lc", cmd]
+    powerApplyProcess.running = true
+  }
+
   function saveAll() {
     try {
+      var currentBarEnabled = getNested(configData, ["components", "bar", "enabled"], true)
+      var barChanged = currentBarEnabled !== _lastSavedBarEnabled
+      var currentPowerDeviceType = getNested(configData, ["power", "deviceType"], "auto")
+      var currentPowerProfile = getNested(configData, ["power", "profile"], "performance")
+      var powerChanged = currentPowerDeviceType !== _lastSavedPowerDeviceType || currentPowerProfile !== _lastSavedPowerProfile
       configFile.setText(JSON.stringify(configData, null, 2) + "\n")
       appsFile.setText(JSON.stringify(appsData, null, 2) + "\n")
+      if (barChanged) _applyWaybarEnabled(currentBarEnabled)
+      if (powerChanged) _applyPowerFromConfig()
+      _lastSavedBarEnabled = currentBarEnabled
+      _lastSavedPowerDeviceType = currentPowerDeviceType
+      _lastSavedPowerProfile = currentPowerProfile
       hasUnsavedChanges = false
+      postSaveReloadTimer.restart()
     } catch (e) {
       console.log("ConfigPanel: Failed to save:", e)
+    }
+  }
+
+  Process {
+    id: waybarApplyProcess
+    command: ["bash", "-lc", "true"]
+  }
+
+  Process {
+    id: powerApplyProcess
+    command: ["bash", "-lc", "true"]
+  }
+
+  Timer {
+    id: postSaveReloadTimer
+    interval: 120
+    repeat: false
+    onTriggered: {
+      configFile.reload()
+      _loadConfigData()
     }
   }
 
@@ -362,9 +447,9 @@ Scope {
       Rectangle {
         anchors.fill: parent
         radius: 20
-        color: configPanel.colors ? Qt.rgba(configPanel.colors.surface.r, configPanel.colors.surface.g, configPanel.colors.surface.b, 0.88) : Qt.rgba(0.1, 0.06, 0.05, 0.88)
+        color: configPanel.cfgSurfaceColor
         border.width: 1
-        border.color: configPanel.colors ? Qt.rgba(configPanel.colors.primary.r, configPanel.colors.primary.g, configPanel.colors.primary.b, 0.15) : Qt.rgba(1, 1, 1, 0.1)
+        border.color: configPanel.cfgBorderColor
       }
 
       Row {
@@ -392,10 +477,10 @@ Scope {
               height: 30
 
               property color fillColor: parent.isSelected
-                ? (configPanel.colors ? configPanel.colors.primary : "#4fc3f7")
+                ? configPanel.cfgTabSelectedBg
                 : (parent.isHovered
-                  ? (configPanel.colors ? Qt.rgba(configPanel.colors.surfaceVariant.r, configPanel.colors.surfaceVariant.g, configPanel.colors.surfaceVariant.b, 0.5) : Qt.rgba(1, 1, 1, 0.15))
-                  : (configPanel.colors ? Qt.rgba(configPanel.colors.surfaceContainer.r, configPanel.colors.surfaceContainer.g, configPanel.colors.surfaceContainer.b, 0.7) : Qt.rgba(0.1, 0.12, 0.18, 0.7)))
+                  ? configPanel.cfgTabHoverBg
+                  : configPanel.cfgTabIdleBg)
               property color strokeColor: parent.isSelected
                 ? (configPanel.colors ? Qt.rgba(configPanel.colors.primary.r, configPanel.colors.primary.g, configPanel.colors.primary.b, 0.6) : Qt.rgba(1, 1, 1, 0.3))
                 : (parent.isHovered
@@ -552,35 +637,35 @@ Scope {
 
             ConfigWallpaperAdvancedSection {
               width: parent.width
-              visible: configPanel.currentSection === 5
+              visible: configPanel.currentSection === 4
               panel: configPanel
               colors: configPanel.colors
             }
 
             ConfigIntegrationsSection {
               width: parent.width
-              visible: configPanel.currentSection === 6
+              visible: configPanel.currentSection === 5
               panel: configPanel
               colors: configPanel.colors
             }
 
             ConfigAppsSection {
               width: parent.width
-              visible: configPanel.currentSection === 7
+              visible: configPanel.currentSection === 6
               panel: configPanel
               colors: configPanel.colors
             }
 
             ConfigIntervalsSection {
               width: parent.width
-              visible: configPanel.currentSection === 8
+              visible: configPanel.currentSection === 7
               panel: configPanel
               colors: configPanel.colors
             }
 
             ConfigKeybindsSection {
               width: parent.width
-              visible: configPanel.currentSection === 9
+              visible: configPanel.currentSection === 8
               panel: configPanel
               colors: configPanel.colors
             }
