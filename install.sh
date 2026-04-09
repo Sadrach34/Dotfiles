@@ -325,7 +325,7 @@ install_base_packages_pacman() {
   sudo pacman -Syu --noconfirm
 
   pacman_install \
-    git rsync curl wget unzip zip base-devel stow tree ncdu inxi gum \
+    git rsync curl wget unzip zip base-devel stow tree ncdu inxi gum jq \
     zsh zsh-completions kitty fzf ripgrep lsd btop htop tmux neovim nano vim \
     fastfetch \
     python python-pip python-virtualenv pyenv python-pipx \
@@ -361,7 +361,7 @@ install_core_desktop() {
   pacman_install \
     hyprland hypridle hyprlock \
     hyprpolkitagent xdg-desktop-portal-hyprland \
-    waybar swaync awww
+    waybar swaync awww power-profiles-daemon
 
   ensure_yay
   install_quickshell

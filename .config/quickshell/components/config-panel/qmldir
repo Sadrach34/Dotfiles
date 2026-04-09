@@ -5,10 +5,13 @@ ConfigComponentsSection 1.0 ConfigComponentsSection.qml
 ConfigFileBrowser 1.0 ConfigFileBrowser.qml
 ConfigFooter 1.0 ConfigFooter.qml
 ConfigGeneralSection 1.0 ConfigGeneralSection.qml
+ConfigPowerSection 1.0 ConfigPowerSection.qml
 ConfigWallpaperSection 1.0 ConfigWallpaperSection.qml
+ConfigWallpaperAdvancedSection 1.0 ConfigWallpaperAdvancedSection.qml
 ConfigIconPicker 1.0 ConfigIconPicker.qml
 ConfigIntegrationsSection 1.0 ConfigIntegrationsSection.qml
 ConfigIntervalsSection 1.0 ConfigIntervalsSection.qml
+ConfigKeybindsSection 1.0 ConfigKeybindsSection.qml
 ConfigNumberField 1.0 ConfigNumberField.qml
 ConfigSectionTitle 1.0 ConfigSectionTitle.qml
 ConfigTextField 1.0 ConfigTextField.qml

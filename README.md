@@ -11,7 +11,7 @@
 
 # sadrach34 / SdrxDots
 
-**Hyprland · Arch Linux** — configuración personal para uso real, no para demos.
+**Hyprland · Arch Linux** — personal configuration for real-world use, not for demos.
 
 ![](https://img.shields.io/github/last-commit/Sadrach34/SdrxDots?style=for-the-badge&color=cba6f7&labelColor=1e1e2e&logo=git&logoColor=cdd6f4)
 ![](https://img.shields.io/github/stars/Sadrach34/SdrxDots?style=for-the-badge&color=f38ba8&labelColor=1e1e2e&logo=starship&logoColor=cdd6f4)
@@ -22,10 +22,10 @@
 ---
 
 <div align="center">
-  <h2>· capturas ·</h2>
+  <h2>· screenshots ·</h2>
 </div>
 
-### Escritorio principal
+### Main desktop
 
 ![Desktop](./assets/screenshots/desktop-main.png)
 
@@ -53,43 +53,58 @@
 ---
 
 <div align="center">
-  <h2>· qué incluye ·</h2>
+  <h2>· what's included ·</h2>
 </div>
 
 <details open>
-<summary><b>Componentes principales</b></summary>
+<summary><b>Main components</b></summary>
 <br>
 
-| Componente      | Stack      | Descripción                                                            |
-| --------------- | ---------- | ---------------------------------------------------------------------- |
-| **Hyprland**    | compositor | Keybinds, scripts, autostart y gestión de wallpapers                   |
-| **Quickshell**  | widgets    | Top panel, dashboard, launcher, wallpaper picker y reloj personalizado |
-| **Waybar**      | barra      | Módulos extra con integración a Quickshell                             |
-| **Zsh**         | shell      | `.zshrc` con aliases y configuración de uso diario                     |
-| **install.sh**  | tooling    | Script con modos `--install` y `--update`, con backup automático       |
-| **wallpapers/** | assets     | Colección de fondos estáticos curada                                   |
+| Component       | Stack      | Description                                                         |
+| --------------- | ---------- | ------------------------------------------------------------------- |
+| **Hyprland**    | compositor | Keybinds, scripts, autostart, and wallpaper management             |
+| **Quickshell**  | widgets    | Top panel, dashboard, launcher, wallpaper picker, and custom clock |
+| **Waybar**      | bar        | Extra modules with Quickshell integration                          |
+| **Zsh**         | shell      | `.zshrc` with aliases and daily-use configuration                  |
+| **install.sh**  | tooling    | Script with `--install` and `--update` modes, with auto-backup     |
+| **wallpapers/** | assets     | Curated collection of static wallpapers                            |
 
 </details>
 
 <details>
-<summary><b>Formatos de wallpaper soportados</b></summary>
+<summary><b>Supported wallpaper formats</b></summary>
 <br>
 
-Solo se incluyen wallpapers **estáticos** para garantizar compatibilidad con todos los backends.
+Only **static** wallpapers are included to ensure compatibility with all backends.
 
-✅ **Soportados:** `.jpg` `.jpeg` `.png` `.webp` `.bmp` `.tiff` `.pnm` `.tga` `.farbfeld`
+✅ **Supported:** `.jpg` `.jpeg` `.png` `.webp` `.bmp` `.tiff` `.pnm` `.tga` `.farbfeld`
 
-❌ **Excluidos:** `.gif` `.mp4` `.mkv` `.mov` `.webm` `.avi`
+❌ **Excluded:** `.gif` `.mp4` `.mkv` `.mov` `.webm` `.avi`
 
 </details>
 
 ---
 
 <div align="center">
-  <h2>· instalación ·</h2>
+  <h2>· documentation & wiki ·</h2>
 </div>
 
-### Primera instalación
+For detailed documentation, installation guides, and component information in your language, visit the **[SdrxDots Wiki](https://github.com/Sadrach34/SdrxDots/wiki)**.
+
+**Available languages:**
+- 🇬🇧 **English** — [Home](https://github.com/Sadrach34/SdrxDots/wiki/Home-en) · [Installation](https://github.com/Sadrach34/SdrxDots/wiki/Installation-en) · [Components](https://github.com/Sadrach34/SdrxDots/wiki/Components-en)
+- 🇪🇸 **Español** — [Inicio](https://github.com/Sadrach34/SdrxDots/wiki/Home-es) · [Instalación](https://github.com/Sadrach34/SdrxDots/wiki/Installation-es) · [Componentes](https://github.com/Sadrach34/SdrxDots/wiki/Components-es)
+- 🇮🇳 **हिन्दी** — [गृह](https://github.com/Sadrach34/SdrxDots/wiki/Home-hi) · [स्थापना](https://github.com/Sadrach34/SdrxDots/wiki/Installation-hi) · [घटकों](https://github.com/Sadrach34/SdrxDots/wiki/Components-hi)
+- 🇨🇳 **中文 (简体)** — [主页](https://github.com/Sadrach34/SdrxDots/wiki/Home-zh) · [安装](https://github.com/Sadrach34/SdrxDots/wiki/Installation-zh) · [组件](https://github.com/Sadrach34/SdrxDots/wiki/Components-zh)
+- 🇷🇺 **Русский** — [Главная](https://github.com/Sadrach34/SdrxDots/wiki/Home-ru) · [Установка](https://github.com/Sadrach34/SdrxDots/wiki/Installation-ru) · [Компоненты](https://github.com/Sadrach34/SdrxDots/wiki/Components-ru)
+
+---
+
+<div align="center">
+  <h2>· installation ·</h2>
+</div>
+
+### First installation
 
 ```bash
 git clone https://github.com/Sadrach34/SdrxDots.git
@@ -97,72 +112,68 @@ cd SdrxDots
 bash install.sh --install
 ```
 
-### Instalación personalizada (ejemplos)
+### Custom installation (examples)
 
 ```bash
-# Setup completo con SDDM/GRUB, perfil laptop, animaciones y stack gamer/dev
+# Full setup with SDDM/GRUB, laptop profile, animations, and gamer/dev stack
 bash install.sh --install --sddm --grub --laptop --animations --gamer --programmer
 
-# Setup mínimo de escritorio (sin animaciones ni gamer)
+# Minimal desktop setup (without animations or gamer)
 bash install.sh --install --no-animations --no-gamer --programmer
 ```
 
-### Actualizar SdrxDots existentes
+### Update existing SdrxDots
 
 ```bash
 cd SdrxDots
 bash install.sh --update
 ```
 
-### Actualizar con comando Sdrx (desde zsh)
+### Update with Sdrx command (from zsh)
 
-El `.zshrc` base incluye el comando `Sdrx`, que ejecuta `install.sh` con las mismas
-opciones de módulos.
+The base `.zshrc` includes the `Sdrx` command, which runs `install.sh` with the same module options.
 
 ```bash
-# update (por defecto)
+# update (default)
 Sdrx
 
-# update con módulos explícitos
+# update with explicit modules
 Sdrx --sddm --grub --laptop
 
-# instalación inicial
+# initial installation
 Sdrx --install --animations --gamer --programmer
 
-# ayuda
+# help
 Sdrx --help
 ```
 
-### Update sin volver a preguntar módulos
+### Update without re-prompting modules
 
-En modo `--update`, el instalador reutiliza las opciones guardadas en la instalación previa
-(`sddm/grub/laptop/animations/gamer/programmer`) y solo aplica cambios.
+In `--update` mode, the installer reuses options saved from the previous installation (`sddm/grub/laptop/animations/gamer/programmer`) and only applies changes.
 
-Puedes forzar cualquier módulo con flags explícitos:
+You can force any module with explicit flags:
 
 ```bash
 bash install.sh --update --sddm --grub --laptop
 bash install.sh --update --no-sddm --no-grub --no-laptop
 ```
 
-### Script de actualización de sistema
+### System update script
 
-También se instala `~/update.sh`, que ahora verifica si hay cambios nuevos en el repo remoto
-de GitHub y muestra una notificación de update disponible antes de continuar con
-la actualización de paquetes.
+`~/update.sh` is also installed. It checks for new changes in the remote GitHub repo and shows an available update notification before proceeding with package updates.
 
-### Modo automático (detecta instalación o update)
+### Automatic mode (detects installation or update)
 
 ```bash
 bash install.sh
 ```
 
-> El script detecta si ya existe una instalación previa y hace **backup automático** de los archivos antes de sobrescribir.
+> The script detects whether a previous installation exists and makes **automatic backups** before overwriting files.
 
 ---
 
 <div align="center">
-  <h2>· estructura ·</h2>
+  <h2>· structure ·</h2>
 </div>
 
 ```
@@ -170,34 +181,34 @@ SdrxDots/
 ├── .config/
 │   ├── hypr/          # compositor — keybinds, monitors, scripts
 │   ├── quickshell/    # widgets — panel, dashboard, launcher, clock
-│   └── waybar/        # barra — módulos e integración con QS
-├── wallpapers/        # fondos estáticos
-├── assets/            # capturas de pantalla y recursos del repo
-├── .zshrc             # shell — aliases y configuración Zsh
-└── install.sh         # instalador con backup automático
+│   └── waybar/        # bar — modules and Quickshell integration
+├── wallpapers/        # static wallpapers
+├── assets/            # screenshots and repo resources
+├── .zshrc             # shell — aliases and Zsh configuration
+└── install.sh         # installer with automatic backup
 ```
 
 ---
 
 <div align="center">
-  <h2>· créditos ·</h2>
+  <h2>· credits ·</h2>
 </div>
 
-Repo mantenido por [`sadrach34`](https://github.com/Sadrach34).  
-Proyectos y personas que sirvieron de inspiración o referencia:
+Repository maintained by [sadrach34](https://github.com/Sadrach34).  
+Projects and people that served as inspiration or reference:
 
-- **[JaKooLit](https://github.com/JaKooLit)** — estructura y scripting de Hyprland
-- **[ambxst](https://github.com/Axenide)** — estética y layout de Quickshell
-- **[Skewed / liixini](https://github.com/liixini)** — diseño de appselector y applauncher
-- **[Modern-Clock-for-Quickshell — Xinoxi](https://github.com/Xinoxi)** — componente del reloj
+- **[JaKooLit](https://github.com/JaKooLit)** — Hyprland structure and scripting
+- **[ambxst](https://github.com/Axenide)** — Quickshell aesthetics and layout
+- **[Skewed / liixini](https://github.com/liixini)** — appselector and applauncher design
+- **[Modern-Clock-for-Quickshell — Xinoxi](https://github.com/Xinoxi)** — clock component
 
 ---
 
-## Licencia
+## License
 
-Este repositorio se distribuye bajo **GNU General Public License v3.0 (GPLv3)**.
+This repository is distributed under **GNU General Public License v3.0 (GPLv3)**.
 
-- El texto completo de la licencia está en `LICENSE`.
-- Los archivos derivados de otros proyectos conservan sus atribuciones en cabeceras/comentarios.
-- El detalle de licencias y avisos de terceros está en `.github/THIRD_PARTY_LICENSES.md` y `.github/NOTICE-DERIVATIVES.md`.
-- Las modificaciones locales se distribuyen bajo GPLv3 junto con el resto del repositorio.
+- The full license text is in LICENSE.
+- Files derived from other projects keep their attributions in headers/comments.
+- Third-party license details and notices are in .github/THIRD_PARTY_LICENSES.md and .github/NOTICE-DERIVATIVES.md.
+- Local modifications are distributed under GPLv3 together with the rest of the repository.

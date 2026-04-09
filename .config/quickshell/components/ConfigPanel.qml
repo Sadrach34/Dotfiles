@@ -23,10 +23,13 @@ Scope {
     { icon: "󰒓", label: "GENERAL" },
     { icon: "󰎛", label: "BAR" },
     { icon: "󰕰", label: "COMPONENTS" },
+    { icon: "󰓅", label: "POWER" },
     { icon: "󰸉", label: "WALLPAPER" },
+    { icon: "󱠡", label: "WALLPAPER+" },
     { icon: "󰌹", label: "INTEGRATIONS" },
     { icon: "󰀻", label: "APPS" },
-    { icon: "󰔟", label: "INTERVALS" }
+    { icon: "󰔟", label: "INTERVALS" },
+    { icon: "󰘳", label: "KEYBINDS" }
   ]
 
   property int cardWidth: 1300
@@ -69,6 +72,14 @@ Scope {
       appsFile.reload()
       if (!configPanel.hasUnsavedChanges) configPanel._loadAppsData()
     }
+  }
+
+  FileView {
+    id: envFile
+    path: configPanel.homeDir + "/.config/skwd-wall/.env"
+    preload: true
+    watchChanges: true
+    onFileChanged: envFile.reload()
   }
 
   function _loadConfigData() {
@@ -188,6 +199,48 @@ Scope {
     }
     o[keys[keys.length - 1]] = value
     hasUnsavedChanges = true
+  }
+
+  function _quoteEnvValue(value) {
+    var str = String(value === undefined || value === null ? "" : value)
+    return '"' + str.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'
+  }
+
+  function _upsertEnvKey(key, value) {
+    var text = ""
+    try {
+      text = envFile.text()
+    } catch (e) {
+      text = ""
+    }
+
+    var lines = text ? text.split(/\r?\n/) : []
+    var targetPrefix = key + "="
+    var newLine = key + "=" + _quoteEnvValue(value)
+    var replaced = false
+
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].trim().startsWith(targetPrefix)) {
+        lines[i] = newLine
+        replaced = true
+        break
+      }
+    }
+
+    if (!replaced) lines.push(newLine)
+
+    var normalized = lines.join("\n").replace(/\n+$/g, "") + "\n"
+    try {
+      envFile.setText(normalized)
+    } catch (e2) {
+      console.log("ConfigPanel: Failed to write .env:", e2)
+    }
+  }
+
+  function saveApiKey(pathKeys, value, envKey) {
+    setNested(configData, pathKeys, value)
+    _upsertEnvKey(envKey, value)
+    configDataChanged()
   }
 
   function getNested(obj, keys, fallback) {
@@ -483,30 +536,51 @@ Scope {
               colors: configPanel.colors
             }
 
-            ConfigWallpaperSection {
+            ConfigPowerSection {
               width: parent.width
               visible: configPanel.currentSection === 3
               panel: configPanel
               colors: configPanel.colors
             }
 
-            ConfigIntegrationsSection {
+            ConfigWallpaperSection {
               width: parent.width
               visible: configPanel.currentSection === 4
               panel: configPanel
               colors: configPanel.colors
             }
 
-            ConfigAppsSection {
+            ConfigWallpaperAdvancedSection {
               width: parent.width
               visible: configPanel.currentSection === 5
               panel: configPanel
               colors: configPanel.colors
             }
 
-            ConfigIntervalsSection {
+            ConfigIntegrationsSection {
               width: parent.width
               visible: configPanel.currentSection === 6
+              panel: configPanel
+              colors: configPanel.colors
+            }
+
+            ConfigAppsSection {
+              width: parent.width
+              visible: configPanel.currentSection === 7
+              panel: configPanel
+              colors: configPanel.colors
+            }
+
+            ConfigIntervalsSection {
+              width: parent.width
+              visible: configPanel.currentSection === 8
+              panel: configPanel
+              colors: configPanel.colors
+            }
+
+            ConfigKeybindsSection {
+              width: parent.width
+              visible: configPanel.currentSection === 9
               panel: configPanel
               colors: configPanel.colors
             }

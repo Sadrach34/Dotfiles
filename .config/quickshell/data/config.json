@@ -39,6 +39,10 @@
     "systemStatsSlowSec": 30
   },
   "terminal": "kitty",
+  "power": {
+    "deviceType": "desktop",
+    "profile": "performance"
+  },
   "wallpaperMute": true,
   "components": {
     "bar": {
