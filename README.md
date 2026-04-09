@@ -1,5 +1,4 @@
 <div align="center">
-  
 ```
   ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗
   ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝
@@ -9,13 +8,13 @@
   ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
 ```
 
-# sadrach34 / Dotfiles
+# sadrach34 / SdrxDots
 
 **Hyprland · Arch Linux** — configuración personal para uso real, no para demos.
 
-![](https://img.shields.io/github/last-commit/Sadrach34/dotfiles?style=for-the-badge&color=cba6f7&labelColor=1e1e2e&logo=git&logoColor=cdd6f4)
-![](https://img.shields.io/github/stars/Sadrach34/dotfiles?style=for-the-badge&color=f38ba8&labelColor=1e1e2e&logo=starship&logoColor=cdd6f4)
-![](https://img.shields.io/github/repo-size/Sadrach34/dotfiles?style=for-the-badge&color=a6e3a1&labelColor=1e1e2e&logo=files&logoColor=cdd6f4)
+![](https://img.shields.io/github/last-commit/Sadrach34/SdrxDots?style=for-the-badge&color=cba6f7&labelColor=1e1e2e&logo=git&logoColor=cdd6f4)
+![](https://img.shields.io/github/stars/Sadrach34/SdrxDots?style=for-the-badge&color=f38ba8&labelColor=1e1e2e&logo=starship&logoColor=cdd6f4)
+![](https://img.shields.io/github/repo-size/Sadrach34/SdrxDots?style=for-the-badge&color=a6e3a1&labelColor=1e1e2e&logo=files&logoColor=cdd6f4)
 
 </div>
 
@@ -46,8 +45,8 @@
 
 ### App launcher & Wallpaper picker
 
-| App launcher | App selector | Wallpaper picker |
-|:---:|:---:|:---:|
+|                App launcher                |                App selector                |                Wallpaper picker                |
+| :----------------------------------------: | :----------------------------------------: | :--------------------------------------------: |
 | ![](./assets/screenshots/app_launcher.png) | ![](./assets/screenshots/app_selector.png) | ![](./assets/screenshots/wallpaper-picker.png) |
 
 ---
@@ -60,14 +59,14 @@
 <summary><b>Componentes principales</b></summary>
 <br>
 
-| Componente | Stack | Descripción |
-|---|---|---|
-| **Hyprland** | compositor | Keybinds, scripts, autostart y gestión de wallpapers |
-| **Quickshell** | widgets | Top panel, dashboard, launcher, wallpaper picker y reloj personalizado |
-| **Waybar** | barra | Módulos extra con integración a Quickshell |
-| **Zsh** | shell | `.zshrc` con aliases y configuración de uso diario |
-| **install.sh** | tooling | Script con modos `--install` y `--update`, con backup automático |
-| **wallpapers/** | assets | Colección de fondos estáticos curada |
+| Componente      | Stack      | Descripción                                                            |
+| --------------- | ---------- | ---------------------------------------------------------------------- |
+| **Hyprland**    | compositor | Keybinds, scripts, autostart y gestión de wallpapers                   |
+| **Quickshell**  | widgets    | Top panel, dashboard, launcher, wallpaper picker y reloj personalizado |
+| **Waybar**      | barra      | Módulos extra con integración a Quickshell                             |
+| **Zsh**         | shell      | `.zshrc` con aliases y configuración de uso diario                     |
+| **install.sh**  | tooling    | Script con modos `--install` y `--update`, con backup automático       |
+| **wallpapers/** | assets     | Colección de fondos estáticos curada                                   |
 
 </details>
 
@@ -92,17 +91,64 @@ Solo se incluyen wallpapers **estáticos** para garantizar compatibilidad con to
 ### Primera instalación
 
 ```bash
-git clone https://github.com/Sadrach34/dotfiles.git
-cd dotfiles
+git clone https://github.com/Sadrach34/SdrxDots.git
+cd SdrxDots
 bash install.sh --install
 ```
 
-### Actualizar dotfiles existentes
+### Instalación personalizada (ejemplos)
 
 ```bash
-cd dotfiles
+# Setup completo con SDDM/GRUB, perfil laptop, animaciones y stack gamer/dev
+bash install.sh --install --sddm --grub --laptop --animations --gamer --programmer
+
+# Setup mínimo de escritorio (sin animaciones ni gamer)
+bash install.sh --install --no-animations --no-gamer --programmer
+```
+
+### Actualizar SdrxDots existentes
+
+```bash
+cd SdrxDots
 bash install.sh --update
 ```
+
+### Actualizar con comando Sdrx (desde zsh)
+
+El `.zshrc` base incluye el comando `Sdrx`, que ejecuta `install.sh` con las mismas
+opciones de módulos.
+
+```bash
+# update (por defecto)
+Sdrx
+
+# update con módulos explícitos
+Sdrx --sddm --grub --laptop
+
+# instalación inicial
+Sdrx --install --animations --gamer --programmer
+
+# ayuda
+Sdrx --help
+```
+
+### Update sin volver a preguntar módulos
+
+En modo `--update`, el instalador reutiliza las opciones guardadas en la instalación previa
+(`sddm/grub/laptop/animations/gamer/programmer`) y solo aplica cambios.
+
+Puedes forzar cualquier módulo con flags explícitos:
+
+```bash
+bash install.sh --update --sddm --grub --laptop
+bash install.sh --update --no-sddm --no-grub --no-laptop
+```
+
+### Script de actualización de sistema
+
+También se instala `~/update.sh`, que ahora verifica si hay cambios nuevos en el repo remoto
+de GitHub y muestra una notificación de update disponible antes de continuar con
+la actualización de paquetes.
 
 ### Modo automático (detecta instalación o update)
 
@@ -119,7 +165,7 @@ bash install.sh
 </div>
 
 ```
-dotfiles/
+SdrxDots/
 ├── .config/
 │   ├── hypr/          # compositor — keybinds, monitors, scripts
 │   ├── quickshell/    # widgets — panel, dashboard, launcher, clock
@@ -152,5 +198,5 @@ Este repositorio se distribuye bajo **GNU General Public License v3.0 (GPLv3)**.
 
 - El texto completo de la licencia está en `LICENSE`.
 - Los archivos derivados de otros proyectos conservan sus atribuciones en cabeceras/comentarios.
-- El detalle de licencias y avisos de terceros está en `THIRD_PARTY_LICENSES.md` y `NOTICE-DERIVATIVES.md`.
+- El detalle de licencias y avisos de terceros está en `.github/THIRD_PARTY_LICENSES.md` y `.github/NOTICE-DERIVATIVES.md`.
 - Las modificaciones locales se distribuyen bajo GPLv3 junto con el resto del repositorio.

@@ -46,6 +46,53 @@ alias upd='yay -Syu --noconfirm'  # Actualización rápida sin confirmación
 alias updsys='sudo pacman -Syu'    # Solo paquetes oficiales
 alias updaur='yay -Sua'            # Solo paquetes de AUR
 
+# SdrxDots updater/installer wrapper
+Sdrx() {
+    local marker_new="$HOME/.local/share/sdrxdots-installed-v3"
+    local marker_old="$HOME/.local/share/sadrach-dotfiles-installed-v3"
+    local repo_dir=""
+    local mode="--update"
+
+    if [[ -f "$marker_new" ]]; then
+        repo_dir="$(awk -F= '/^repo=/{print $2; exit}' "$marker_new" 2>/dev/null)"
+    elif [[ -f "$marker_old" ]]; then
+        repo_dir="$(awk -F= '/^repo=/{print $2; exit}' "$marker_old" 2>/dev/null)"
+    fi
+
+    if [[ -z "$repo_dir" && -d "$HOME/SdrxDots/.git" ]]; then
+        repo_dir="$HOME/SdrxDots"
+    fi
+    if [[ -z "$repo_dir" && -d "$HOME/dotfiles/.git" ]]; then
+        repo_dir="$HOME/dotfiles"
+    fi
+
+    if [[ -z "$repo_dir" || ! -f "$repo_dir/install.sh" ]]; then
+        echo "No se encontro SdrxDots/install.sh. Clona el repo o ejecuta desde su carpeta."
+        return 1
+    fi
+
+    case "${1:-}" in
+        --install|install)
+            mode="--install"
+            shift
+            ;;
+        --update|update|"")
+            [[ "${1:-}" != "" ]] && shift
+            mode="--update"
+            ;;
+        --help|help|-h)
+            mode=""
+            ;;
+    esac
+
+    if [[ -z "$mode" ]]; then
+        bash "$repo_dir/install.sh" --help
+    else
+        bash "$repo_dir/install.sh" "$mode" "$@"
+    fi
+}
+alias sdrx='Sdrx'
+
 # Actualizar aplicaciones específicas
 alias updis='yay -S discord --noconfirm && clear && fastfetch && echo "✓ Discord actualizado"'
 alias upvsc='yay -S visual-studio-code-bin --noconfirm && clear && fastfetch && echo "✓ VSCode actualizado"'
@@ -123,5 +170,4 @@ export PYENV_REHASH_TIMEOUT=5
 
 # Following line was automatically added by arttime installer
 export MANPATH=/home/sadrach/.local/share/man:$MANPATH
-alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
-alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias sdrxdotsctl='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Dotfiles Installer v3 - sadrach
+# SdrxDots Installer v3 - sadrach
 # Fusion de install.sh + install2.sh
 # =============================================================================
 
@@ -22,8 +22,9 @@ section() { echo -e "\n${BLUE}${BOLD}===  $1  ==================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$SCRIPT_DIR"
-BACKUP_ROOT="$HOME/.dotfiles-backup"
-MARKER_FILE="$HOME/.local/share/sadrach-dotfiles-installed-v3"
+BACKUP_ROOT="$HOME/.sdrxdots-backup"
+MARKER_FILE="$HOME/.local/share/sdrxdots-installed-v3"
+LEGACY_MARKER_FILE="$HOME/.local/share/sadrach-dotfiles-installed-v3"
 
 ASSUME_YES=false
 SKIP_PACKAGES=false
@@ -49,9 +50,9 @@ Opciones:
   --update           Forzar modo actualizacion
   --yes, -y          No pedir confirmaciones (acepta todo por defecto)
   --skip-packages    No instalar paquetes
-  --sddm             Instalar/configurar SDDM de dotfiles
+  --sddm             Instalar/configurar SDDM de SdrxDots
   --no-sddm          No tocar SDDM
-  --grub             Instalar/configurar GRUB de dotfiles
+  --grub             Instalar/configurar GRUB de SdrxDots
   --no-grub          No tocar GRUB
   --laptop           Activar ajustes para laptop (Waybar con bateria)
   --no-laptop        Desactivar ajustes de laptop
@@ -94,21 +95,33 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$MODE" == "auto" ]]; then
-  if [[ -f "$MARKER_FILE" ]]; then
+  if [[ -f "$MARKER_FILE" || -f "$LEGACY_MARKER_FILE" ]]; then
     MODE="update"
   else
     MODE="install"
   fi
 fi
 
+resolve_marker_file() {
+  if [[ -f "$MARKER_FILE" ]]; then
+    echo "$MARKER_FILE"
+  elif [[ -f "$LEGACY_MARKER_FILE" ]]; then
+    echo "$LEGACY_MARKER_FILE"
+  else
+    echo "$MARKER_FILE"
+  fi
+}
+
 read_marker_value() {
   local key="$1"
-  awk -F= -v k="$key" '$1 == k { print $2; exit }' "$MARKER_FILE" 2>/dev/null || true
+  local marker_src
+  marker_src="$(resolve_marker_file)"
+  awk -F= -v k="$key" '$1 == k { print $2; exit }' "$marker_src" 2>/dev/null || true
 }
 
 load_previous_option_defaults() {
   [[ "$MODE" == "update" ]] || return
-  [[ -f "$MARKER_FILE" ]] || return
+  [[ -f "$MARKER_FILE" || -f "$LEGACY_MARKER_FILE" ]] || return
 
   local prev
 
@@ -175,7 +188,7 @@ ask_yes_no() {
 
 select_optional_modules() {
   if [[ "$WITH_SDDM" == "auto" ]]; then
-    if ask_yes_no "Instalar/configurar SDDM desde dotfiles (stow)?" true; then
+    if ask_yes_no "Instalar/configurar SDDM desde SdrxDots (stow)?" true; then
       WITH_SDDM="yes"
     else
       WITH_SDDM="no"
@@ -183,7 +196,7 @@ select_optional_modules() {
   fi
 
   if [[ "$WITH_GRUB" == "auto" ]]; then
-    if ask_yes_no "Instalar/configurar GRUB desde dotfiles (stow)?" false; then
+    if ask_yes_no "Instalar/configurar GRUB desde SdrxDots (stow)?" false; then
       WITH_GRUB="yes"
     else
       WITH_GRUB="no"
@@ -456,7 +469,7 @@ install_grub_like_sadrach() {
     fi
   fi
 
-  ok "GRUB configurado desde dotfiles (stow)"
+  ok "GRUB configurado desde SdrxDots (stow)"
 }
 
 install_animation_stack() {
@@ -689,8 +702,8 @@ sync_directory_contents() {
   done < <(find "$src_dir" -mindepth 1 -print0)
 }
 
-apply_dotfiles() {
-  section "Aplicando dotfiles"
+apply_sdrxdots() {
+  section "Aplicando SdrxDots"
   mkdir -p "$BACKUP_ROOT"
 
   [[ -d "$REPO_DIR/.config" ]] || error "No existe $REPO_DIR/.config"
@@ -842,7 +855,7 @@ install_non_arch_minimal() {
       sudo dnf install -y git rsync curl wget unzip zip zsh kitty fzf ripgrep tmux neovim python3 python3-pip cava
       ;;
     *)
-      warn "No se detecto gestor soportado. Solo se aplicaran dotfiles."
+        warn "No se detecto gestor soportado. Solo se aplicara SdrxDots."
       ;;
   esac
 
@@ -984,10 +997,10 @@ if command -v timeout >/dev/null 2>&1; then
   timeout_cmd="timeout 8"
 fi
 
-for marker in /home/*/.local/share/sadrach-dotfiles-installed-v3; do
+for marker in /home/*/.local/share/sdrxdots-installed-v3 /home/*/.local/share/sadrach-dotfiles-installed-v3; do
   [[ -f "$marker" ]] || continue
 
-  home_dir="${marker%/.local/share/sadrach-dotfiles-installed-v3}"
+  home_dir="${marker%/.local/share/*}"
   user_name="$(basename "$home_dir")"
 
   repo_dir="$(awk -F= '/^repo=/{print $2; exit}' "$marker")"
@@ -1018,7 +1031,7 @@ for marker in /home/*/.local/share/sadrach-dotfiles-installed-v3; do
   [[ -n "$remote_sha" ]] || continue
   [[ "$local_sha" != "$remote_sha" ]] || continue
 
-  cache_dir="$home_dir/.cache/sadrach-dotfiles"
+  cache_dir="$home_dir/.cache/sdrxdots"
   cache_file="$cache_dir/last_notified_remote_sha"
 
   mkdir -p "$cache_dir"
@@ -1041,10 +1054,10 @@ for marker in /home/*/.local/share/sadrach-dotfiles-installed-v3; do
     continue
   fi
 
-  msg="Hay una nueva version de tus dotfiles en GitHub. Ejecuta: cd $repo_dir && git pull --ff-only"
+  msg="Hay una nueva version de SdrxDots en GitHub. Ejecuta: cd $repo_dir && git pull --ff-only"
 
   runuser -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=$bus_path" \
-    notify-send -a "pacman" -u normal "Dotfiles: update disponible" "$msg" || true
+    notify-send -a "pacman" -u normal "SdrxDots: update disponible" "$msg" || true
 
   printf '%s\n' "$remote_sha" > "$cache_file"
   chown "$user_name":"$user_name" "$cache_file" 2>/dev/null || true
@@ -1058,20 +1071,20 @@ Type = Package
 Target = *
 
 [Action]
-Description = Revisando nuevas versiones de dotfiles en GitHub...
+Description = Revisando nuevas versiones de SdrxDots en GitHub...
 When = PostTransaction
-Exec = /usr/local/bin/sadrach-dotfiles-version-check
+Exec = /usr/local/bin/sdrxdots-version-check
 EOF
 
-  sudo install -Dm755 "$checker_tmp" /usr/local/bin/sadrach-dotfiles-version-check
-  sudo install -Dm644 "$hook_tmp" /etc/pacman.d/hooks/99-sadrach-dotfiles-version-check.hook
+  sudo install -Dm755 "$checker_tmp" /usr/local/bin/sdrxdots-version-check
+  sudo install -Dm644 "$hook_tmp" /etc/pacman.d/hooks/99-sdrxdots-version-check.hook
 
   rm -f "$checker_tmp" "$hook_tmp"
   ok "Notificador instalado: pacman hook + checker"
 }
 
 main() {
-  section "Dotfiles Installer v3"
+  section "SdrxDots Installer v3"
   info "Repositorio: $REPO_DIR"
   info "Modo: $MODE"
   warn "Se crearan backups en $BACKUP_ROOT"
@@ -1132,7 +1145,7 @@ main() {
     warn "Saltando instalacion de paquetes por --skip-packages"
   fi
 
-  apply_dotfiles
+  apply_sdrxdots
   install_custom_fonts_best_effort
   configure_terminal_best_effort
   configure_waybar_laptop_best_effort

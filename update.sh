@@ -22,12 +22,19 @@ show_banner
 
 WARNINGS=0
 
-find_dotfiles_repo_dir() {
-    local marker="$HOME/.local/share/sadrach-dotfiles-installed-v3"
+find_sdrxdots_repo_dir() {
+    local marker="$HOME/.local/share/sdrxdots-installed-v3"
+    local legacy_marker="$HOME/.local/share/sadrach-dotfiles-installed-v3"
     local repo_dir=""
 
     if [ -f "$marker" ]; then
         repo_dir=$(awk -F= '/^repo=/{print $2; exit}' "$marker" 2>/dev/null || true)
+    elif [ -f "$legacy_marker" ]; then
+        repo_dir=$(awk -F= '/^repo=/{print $2; exit}' "$legacy_marker" 2>/dev/null || true)
+    fi
+
+    if [ -z "$repo_dir" ] && [ -d "$HOME/SdrxDots/.git" ]; then
+        repo_dir="$HOME/SdrxDots"
     fi
 
     if [ -z "$repo_dir" ] && [ -d "$HOME/dotfiles/.git" ]; then
@@ -39,10 +46,10 @@ find_dotfiles_repo_dir() {
     fi
 }
 
-notify_dotfiles_update_if_available() {
+notify_sdrxdots_update_if_available() {
     local repo_dir local_sha local_branch remote_sha msg
 
-    repo_dir="$(find_dotfiles_repo_dir)"
+    repo_dir="$(find_sdrxdots_repo_dir)"
     [ -n "$repo_dir" ] || return 0
 
     command -v git >/dev/null 2>&1 || return 0
@@ -64,11 +71,11 @@ notify_dotfiles_update_if_available() {
     [ -n "$remote_sha" ] || return 0
 
     if [ "$local_sha" != "$remote_sha" ]; then
-        msg="Hay una nueva version de tus dotfiles en GitHub. Ejecuta: cd $repo_dir && git pull --ff-only"
-        echo -e "${YELLOW}⚠ Dotfiles: update disponible en GitHub${RESET}"
+        msg="Hay una nueva version de SdrxDots en GitHub. Ejecuta: cd $repo_dir && git pull --ff-only"
+        echo -e "${YELLOW}⚠ SdrxDots: update disponible en GitHub${RESET}"
         echo -e "${BLUE}  -> $msg${RESET}\n"
         if command -v notify-send >/dev/null 2>&1; then
-            notify-send -a "update.sh" -u normal "Dotfiles: update disponible" "$msg" || true
+            notify-send -a "update.sh" -u normal "SdrxDots: update disponible" "$msg" || true
         fi
     fi
 }
@@ -103,7 +110,7 @@ sync_databases() {
 }
 
 echo -e "${BLUE}[1/4] Sincronizando bases de datos de paquetes...${RESET}"
-notify_dotfiles_update_if_available
+notify_sdrxdots_update_if_available
 
 if sync_databases; then
     echo -e "${GREEN}✓ Bases de datos sincronizadas${RESET}\n"
