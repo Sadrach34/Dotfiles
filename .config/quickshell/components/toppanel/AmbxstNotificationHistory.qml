@@ -5,7 +5,6 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import Quickshell.Services.Notifications
 
 Item {
     id: root
@@ -22,39 +21,29 @@ Item {
     readonly property string fnt:       "JetBrainsMono Nerd Font"
     readonly property string iconFnt:   "Phosphor-Bold"
 
+    property string scriptsPath: Quickshell.env("HOME") + "/.config/quickshell/scripts"
+
     // ── Estado DND (local + swaync si está disponible) ───────────────────────
     property bool dnd: false
+
+    // ── Notificaciones crudas (mismo feed que Dashboard) ─────────────────────
+    property var notifications: []
 
     // ── Notificaciones agrupadas por appName ─────────────────────────────────
     property var appGroups: ({})
     property var appNames:  []
 
-    // ── Servidor de notificaciones ───────────────────────────────────────────
-    NotificationServer {
-        id: notifServer
-        keepOnReload:     true
-        bodySupported:    true
-        actionsSupported: true
-        imageSupported:   true
-        onNotification: (notif) => Qt.callLater(root.rebuildGroups)
-    }
-
-    Connections {
-        target: notifServer.trackedNotifications
-        function onValuesChanged() { Qt.callLater(root.rebuildGroups) }
-    }
-
     function rebuildGroups() {
-        var vals  = notifServer.trackedNotifications.values
+        var vals  = notifications
         var g     = {}
         for (var i = 0; i < vals.length; i++) {
             var n = vals[i]
             if (!n) continue
-            var name = n.appName || "Unknown"
+            var name = n.app || "Unknown"
             if (!g[name]) g[name] = []
             g[name].push(n)
         }
-        // Ordenar cada grupo: más reciente primero (Notification tiene .time en ms)
+        // Ordenar cada grupo: más reciente primero
         for (var key in g) {
             g[key].sort(function(a, b) { return b.time - a.time })
         }
@@ -62,16 +51,62 @@ Item {
         appNames  = Object.keys(g)
     }
 
-    function clearAll() {
-        var vals = notifServer.trackedNotifications.values.slice()
-        for (var i = 0; i < vals.length; i++) {
-            if (vals[i]) vals[i].dismiss()
+    function removeNotification(n) {
+        var list = notifications.slice()
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] && list[i].id === n.id) {
+                list.splice(i, 1)
+                break
+            }
         }
-        Qt.callLater(rebuildGroups)
+        notifications = list
+        rebuildGroups()
     }
 
-    // DND via swaync si está disponible (fail silently si no está)
-    Process { id: dndProc; command: ["swaync-client", "-d"] }
+    function clearAll() {
+        notifications = []
+        appGroups = ({})
+        appNames = []
+        clearProc.running = true
+    }
+
+    // Feed de notificaciones (igual que Dashboard)
+    Process {
+        id: notifWatchProc
+        command: ["bash", root.scriptsPath + "/notif_watch.sh"]
+        stdout: SplitParser {
+            onRead: data => {
+                try {
+                    var n = JSON.parse(data.trim())
+                    if (!n.summary) return
+                    n.time = Date.now()
+                    n.id = n.time + "-" + Math.random().toString(36).slice(2, 8)
+                    var list = root.notifications.slice()
+                    list.unshift(n)
+                    if (list.length > 50) list = list.slice(0, 50)
+                    root.notifications = list
+                    root.rebuildGroups()
+                } catch (e) {}
+            }
+        }
+    }
+
+    // DND/clear via swaync si está disponible (fail silently si no está)
+    Process {
+        id: dndStateProc
+        command: ["swaync-client", "-D"]
+        stdout: SplitParser {
+            onRead: data => { root.dnd = data.trim() === "true" }
+        }
+    }
+
+    Process { id: dndProc; command: ["swaync-client", "-d"]; onExited: dndStateProc.running = true }
+    Process { id: clearProc; command: ["swaync-client", "-C"] }
+
+    Component.onCompleted: {
+        notifWatchProc.running = true
+        dndStateProc.running = true
+    }
 
     // ── Layout ────────────────────────────────────────────────────────────────
     ColumnLayout {
@@ -141,7 +176,6 @@ Item {
                             cursorShape:  Qt.PointingHandCursor
                             hoverEnabled: true
                             onClicked: {
-                                root.dnd = !root.dnd
                                 dndProc.running = true
                             }
                         }
@@ -227,7 +261,7 @@ Item {
                                     width: notifColumn.width
                                     appName:   modelData
                                     notifList: root.appGroups[modelData] ?? []
-                                    onDismiss: n => n.dismiss()
+                                    onDismiss: n => root.removeNotification(n)
                                 }
                             }
                         }
@@ -270,7 +304,7 @@ Item {
                     Image {
                         id: appIconImg
                         property var firstNotif: grp.notifList.length > 0 ? grp.notifList[0] : null
-                        source: firstNotif && firstNotif.appIcon ? "image://icon/" + firstNotif.appIcon : ""
+                        source: ""
                         visible: status === Image.Ready
                         width: 16; height: 16
                         mipmap: true
@@ -342,7 +376,7 @@ Item {
                     // Imagen de la notificación (si tiene)
                     Image {
                         id: notifImg
-                        source: item.notif && item.notif.image ? item.notif.image : ""
+                        source: ""
                         visible: source !== "" && status === Image.Ready
                         width: 36; height: 36
                         fillMode: Image.PreserveAspectCrop

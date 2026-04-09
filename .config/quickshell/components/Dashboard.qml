@@ -94,6 +94,11 @@ PanelWindow {
                         dashboardVisible: root.dashboardVisible
                     }
 
+                    BatteryWidget {
+                        theme: theme
+                        dashboardVisible: root.dashboardVisible
+                    }
+
                     // ── Uso de CPU, RAM y disco en tiempo real con gráficas circulares ──
                     SystemStats {
                         theme: theme

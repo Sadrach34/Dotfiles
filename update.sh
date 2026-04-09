@@ -22,6 +22,57 @@ show_banner
 
 WARNINGS=0
 
+find_dotfiles_repo_dir() {
+    local marker="$HOME/.local/share/sadrach-dotfiles-installed-v3"
+    local repo_dir=""
+
+    if [ -f "$marker" ]; then
+        repo_dir=$(awk -F= '/^repo=/{print $2; exit}' "$marker" 2>/dev/null || true)
+    fi
+
+    if [ -z "$repo_dir" ] && [ -d "$HOME/dotfiles/.git" ]; then
+        repo_dir="$HOME/dotfiles"
+    fi
+
+    if [ -n "$repo_dir" ] && [ -d "$repo_dir/.git" ]; then
+        echo "$repo_dir"
+    fi
+}
+
+notify_dotfiles_update_if_available() {
+    local repo_dir local_sha local_branch remote_sha msg
+
+    repo_dir="$(find_dotfiles_repo_dir)"
+    [ -n "$repo_dir" ] || return 0
+
+    command -v git >/dev/null 2>&1 || return 0
+
+    local_sha="$(git -C "$repo_dir" rev-parse HEAD 2>/dev/null || true)"
+    [ -n "$local_sha" ] || return 0
+
+    local_branch="$(git -C "$repo_dir" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+    remote_sha=""
+
+    if [ -n "$local_branch" ] && [ "$local_branch" != "HEAD" ]; then
+        remote_sha="$(git -C "$repo_dir" ls-remote --heads origin "refs/heads/$local_branch" 2>/dev/null | awk 'NR==1{print $1}')"
+    fi
+
+    if [ -z "$remote_sha" ]; then
+        remote_sha="$(git -C "$repo_dir" ls-remote origin HEAD 2>/dev/null | awk 'NR==1{print $1}')"
+    fi
+
+    [ -n "$remote_sha" ] || return 0
+
+    if [ "$local_sha" != "$remote_sha" ]; then
+        msg="Hay una nueva version de tus dotfiles en GitHub. Ejecuta: cd $repo_dir && git pull --ff-only"
+        echo -e "${YELLOW}⚠ Dotfiles: update disponible en GitHub${RESET}"
+        echo -e "${BLUE}  -> $msg${RESET}\n"
+        if command -v notify-send >/dev/null 2>&1; then
+            notify-send -a "update.sh" -u normal "Dotfiles: update disponible" "$msg" || true
+        fi
+    fi
+}
+
 sync_databases() {
     local sync_log
     sync_log=$(mktemp)
@@ -52,6 +103,8 @@ sync_databases() {
 }
 
 echo -e "${BLUE}[1/4] Sincronizando bases de datos de paquetes...${RESET}"
+notify_dotfiles_update_if_available
+
 if sync_databases; then
     echo -e "${GREEN}✓ Bases de datos sincronizadas${RESET}\n"
 else
