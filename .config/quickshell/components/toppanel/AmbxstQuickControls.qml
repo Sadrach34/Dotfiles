@@ -9,6 +9,9 @@ import Quickshell.Io
 Item {
     id: root
     property string gmNewScript: Quickshell.env("HOME") + "/.config/hypr/scripts/GMnew"
+    property bool hasCachyKernel: false
+    property bool hasScxctl: false
+    readonly property bool canSwitchScheduler: hasCachyKernel && hasScxctl
 
     function desiredScheduler() {
         if (cafBtn.cafActive) return "lavd"
@@ -17,6 +20,7 @@ Item {
     }
 
     function applyScheduler() {
+        if (!canSwitchScheduler) return
         var target = desiredScheduler()
         schedulerProc.command = ["scxctl", "switch", "--sched", target]
         schedulerProc.running = false
@@ -162,6 +166,7 @@ Item {
                         stdout: SplitParser {
                             onRead: data => {
                                 gmBtn.gmActive = data.trim() === "on"
+                                root.applyScheduler()
                             }
                         }
                     }
@@ -175,6 +180,31 @@ Item {
     Process {
         id: schedulerProc
         command: ["true"]
+    }
+
+    Process {
+        id: kernelDetectProc
+        command: ["bash", "-c", "uname -r"]
+        stdout: SplitParser {
+            onRead: data => {
+                root.hasCachyKernel = data.toLowerCase().indexOf("cachyos") !== -1
+            }
+        }
+    }
+
+    Process {
+        id: scxDetectProc
+        command: ["bash", "-c", "command -v scxctl >/dev/null 2>&1 && echo yes || echo no"]
+        stdout: SplitParser {
+            onRead: data => {
+                root.hasScxctl = data.trim() === "yes"
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        kernelDetectProc.running = true
+        scxDetectProc.running = true
     }
 
     // Evita prompts de autenticacion al reiniciar quickshell.

@@ -235,6 +235,10 @@ detect_pkg_manager() {
   fi
 }
 
+is_cachyos_kernel() {
+  uname -r | grep -qi 'cachyos'
+}
+
 ensure_yay() {
   if command -v yay >/dev/null 2>&1; then
     ok "yay ya esta instalado"
@@ -883,6 +887,46 @@ ensure_cava_installed_best_effort() {
   fi
 }
 
+install_scheduler_tools_for_cachyos_best_effort() {
+  section "Scheduler tools (CachyOS kernel)"
+
+  if ! is_cachyos_kernel; then
+    info "Kernel no es CachyOS; se conserva comportamiento comun sin schedulers"
+    return
+  fi
+
+  if command -v scxctl >/dev/null 2>&1; then
+    ok "scxctl ya esta disponible"
+    return
+  fi
+
+  info "Kernel CachyOS detectado; instalando herramientas de scheduler"
+
+  if pacman -Si scx-scheds >/dev/null 2>&1; then
+    pacman_install scx-scheds
+  fi
+
+  if command -v scxctl >/dev/null 2>&1; then
+    ok "scxctl disponible"
+    return
+  fi
+
+  ensure_yay
+  if ! yay -Q scx-scheds >/dev/null 2>&1; then
+    yay -S --needed --noconfirm scx-scheds || true
+  fi
+
+  if ! command -v scxctl >/dev/null 2>&1; then
+    yay -S --needed --noconfirm scx-scheds-git || true
+  fi
+
+  if command -v scxctl >/dev/null 2>&1; then
+    ok "Herramientas scheduler instaladas"
+  else
+    warn "No se pudo instalar scxctl; caffeine/gamemode funcionaran sin cambiar scheduler"
+  fi
+}
+
 install_custom_fonts_best_effort() {
   section "Fuentes custom (Quickshell)"
 
@@ -1094,6 +1138,9 @@ main() {
   configure_waybar_laptop_best_effort
   configure_wallpaper_backend_best_effort
   ensure_cava_installed_best_effort
+  if [[ "$pkgm" == "pacman" ]]; then
+    install_scheduler_tools_for_cachyos_best_effort
+  fi
   if [[ "$pkgm" == "pacman" ]]; then
     install_repo_update_notifier_pacman
   fi

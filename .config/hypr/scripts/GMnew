@@ -12,7 +12,23 @@ is_on() {
   [ -f "$BASE_LOCK_FILE" ]
 }
 
+is_cachyos_kernel() {
+  uname -r | grep -qi 'cachyos'
+}
+
+has_scxctl() {
+  command -v scxctl >/dev/null 2>&1
+}
+
 apply_scheduler_from_state() {
+  if ! is_cachyos_kernel; then
+    return
+  fi
+
+  if ! has_scxctl; then
+    return
+  fi
+
   if is_on; then
     scxctl switch --sched flash >/dev/null 2>&1 || true
   else
