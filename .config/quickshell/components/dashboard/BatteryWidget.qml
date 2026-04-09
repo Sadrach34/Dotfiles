@@ -31,6 +31,7 @@ Rectangle {
 
     function statusLabel() {
         var st = (batteryStatus || "").toLowerCase()
+        if (st.indexOf("not charging") !== -1) return "Not charging"
         if (st.indexOf("charg") !== -1) return "Charging"
         if (st.indexOf("full") !== -1) return "Full"
         return "Discharging"
@@ -97,7 +98,7 @@ Rectangle {
 
     Process {
         id: batProc
-        command: ["bash", "-c", "BAT=$(ls -1 /sys/class/power_supply/BAT* 2>/dev/null | head -n1); if [ -z \"$BAT\" ]; then echo 'none|0|Unknown'; else CAP=$(cat \"$BAT/capacity\" 2>/dev/null || echo 0); ST=$(cat \"$BAT/status\" 2>/dev/null || echo Unknown); echo \"yes|$CAP|$ST\"; fi"]
+        command: ["bash", "-c", "BAT=''; for P in /sys/class/power_supply/*; do [ -d \"$P\" ] || continue; T=$(cat \"$P/type\" 2>/dev/null || true); [ \"${T,,}\" = battery ] || continue; BAT=\"$P\"; break; done; if [ -z \"$BAT\" ]; then echo 'none|0|Unknown'; exit 0; fi; if [ -f \"$BAT/capacity\" ]; then CAP=$(cat \"$BAT/capacity\" 2>/dev/null || echo 0); elif [ -f \"$BAT/energy_now\" ] && [ -f \"$BAT/energy_full\" ]; then NOW=$(cat \"$BAT/energy_now\" 2>/dev/null || echo 0); FULL=$(cat \"$BAT/energy_full\" 2>/dev/null || echo 0); if [ \"$FULL\" -gt 0 ] 2>/dev/null; then CAP=$(( NOW * 100 / FULL )); else CAP=0; fi; elif [ -f \"$BAT/charge_now\" ] && [ -f \"$BAT/charge_full\" ]; then NOW=$(cat \"$BAT/charge_now\" 2>/dev/null || echo 0); FULL=$(cat \"$BAT/charge_full\" 2>/dev/null || echo 0); if [ \"$FULL\" -gt 0 ] 2>/dev/null; then CAP=$(( NOW * 100 / FULL )); else CAP=0; fi; else CAP=0; fi; ST=$(cat \"$BAT/status\" 2>/dev/null || echo Unknown); echo \"yes|$CAP|$ST\""]
         stdout: SplitParser {
             onRead: data => {
                 var p = data.trim().split("|")
