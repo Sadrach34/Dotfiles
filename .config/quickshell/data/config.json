@@ -40,20 +40,23 @@
   },
   "terminal": "kitty",
   "power": {
-    "deviceType": "desktop",
+    "deviceType": "auto",
     "profile": "performance"
   },
   "wallpaperMute": true,
   "components": {
     "bar": {
+      "backend": "waybar",
+      "waybarConfig": "~/.config/waybar/config",
+      "waybarStyle": "~/.config/waybar/style.css",
       "enabled": true,
       "weather": {
-        "enabled": true,
-        "city": "YOUR_CITY"
+        "enabled": false,
+        "city": ""
       },
       "wifi": {
-        "enabled": true,
-        "interface": "wlan0"
+        "enabled": false,
+        "interface": "enp42s0"
       },
       "bluetooth": true,
       "volume": true,
