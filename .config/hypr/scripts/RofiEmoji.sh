@@ -11,7 +11,7 @@ if pidof rofi > /dev/null; then
   pkill rofi
 fi
 
-sed '1,/^# # DATA # #$/d' "$0" | \
+emoji_data | \
 rofi -i -dmenu -mesg "$msg" -config $rofi_theme | \
 awk '{print $1}' | \
 head -n 1 | \
@@ -20,7 +20,8 @@ wl-copy
 
 exit
 
-# # DATA # #
+emoji_data() {
+cat <<'EOF'
 😀 grinning face face smile happy joy :D grin
 😃 grinning face with big eyes face happy joy haha :D :) smile funny
 😄 grinning face with smiling eyes face happy joy funny haha laugh like :D :) smile
@@ -1870,3 +1871,5 @@ ycap  symbol blue-square twitter
 🫧 bubbles soap fun carbonation sparkling
 🪪 identification card document
 🟰 heavy equals sign math
+EOF
+}
