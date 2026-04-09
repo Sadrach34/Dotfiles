@@ -11,10 +11,74 @@ ROUNDING=10
 # --- RUTAS ---
 NOTIF_ICON="$HOME/.config/swaync/images/ja.png"
 WALLPAPER="$HOME/.config/rofi/.current_wallpaper" 
+WALLPAPER_PIDFILE="/tmp/wallpaper_auto_change.pid"
+WALLPAPER_APPLY_SCRIPT="$HOME/.config/hypr/UserScripts/WallpaperApply.sh"
 
 # --- LÓGICA ---
 LOCK_FILE="/tmp/gamemode.lock"
 WALLPAPER_DIR="$HOME/Pictures/wallpapers"
+
+stop_quickshell_full() {
+    # Cerrar cualquier instancia de Quickshell (binario quickshell o wrapper qs).
+    pkill -x quickshell 2>/dev/null || true
+    pkill -x qs 2>/dev/null || true
+    pkill -f '/quickshell' 2>/dev/null || true
+    sleep 0.2
+    pkill -9 -x quickshell 2>/dev/null || true
+    pkill -9 -x qs 2>/dev/null || true
+}
+
+stop_wallpaper_stack_full() {
+    # Detener rotadores/scripts de cambio de fondo.
+    pkill -f "WallpaperAutoChange.sh" 2>/dev/null || true
+    pkill -f "WallpaperRandom.sh" 2>/dev/null || true
+    pkill -f "WallpaperNext.sh" 2>/dev/null || true
+
+    # Si existe PID del auto-change legacy, detenerlo y limpiar pidfile.
+    if [ -f "$WALLPAPER_PIDFILE" ]; then
+        wp_pid="$(cat "$WALLPAPER_PIDFILE" 2>/dev/null || true)"
+        if [ -n "$wp_pid" ]; then
+            kill "$wp_pid" 2>/dev/null || true
+        fi
+        rm -f "$WALLPAPER_PIDFILE"
+    fi
+
+    # Detener daemons/backends de wallpaper para liberar recursos al 100%.
+    pkill -x mpvpaper 2>/dev/null || true
+    pkill -x swaybg 2>/dev/null || true
+    pkill -x hyprpaper 2>/dev/null || true
+    pkill -x awww-daemon 2>/dev/null || true
+    awww kill 2>/dev/null || true
+}
+
+restore_wallpaper_once() {
+    if [ ! -e "$WALLPAPER" ]; then
+        return
+    fi
+
+    current_wall="$(readlink -f "$WALLPAPER" 2>/dev/null || true)"
+    if [ -z "$current_wall" ]; then
+        current_wall="$WALLPAPER"
+    fi
+
+    if [ -x "$WALLPAPER_APPLY_SCRIPT" ]; then
+        "$WALLPAPER_APPLY_SCRIPT" image "$current_wall" >/dev/null 2>&1 || true
+        return
+    fi
+
+    # Fallback por compatibilidad si no existe WallpaperApply.sh
+    if ! pgrep -x awww-daemon >/dev/null; then
+        awww-daemon --format xrgb >/dev/null 2>&1 &
+        sleep 1
+    fi
+    awww img "$current_wall" >/dev/null 2>&1 || true
+}
+
+start_quickshell_if_needed() {
+    if ! pgrep -x quickshell >/dev/null && ! pgrep -x qs >/dev/null; then
+        nohup quickshell >/dev/null 2>&1 &
+    fi
+}
 
 if [ -f "$LOCK_FILE" ]; then
     # --- DESACTIVAR MODO JUEGO ---
@@ -46,16 +110,9 @@ if [ -f "$LOCK_FILE" ]; then
     sleep 1
     waybar &
     
-    # Restaurar wallpaper actual
-    # 1. Cargar wallpaper actual si existe (imagen estática)
-    if [ -f "$WALLPAPER" ] && [ -s "$WALLPAPER" ]; then
-        # Asegurar que swww-daemon está corriendo
-        if ! pgrep -x swww-daemon >/dev/null; then
-            swww-daemon --format xrgb >/dev/null 2>&1 &
-            sleep 1
-        fi
-        swww img "$WALLPAPER" >/dev/null 2>&1
-    fi
+    # Restaurar quickshell y fondo al salir del modo juego.
+    start_quickshell_if_needed
+    restore_wallpaper_once
     
     rm "$LOCK_FILE"
     notify-send -u normal -i "$NOTIF_ICON" "🎮 Modo Juego: Desactivado" "Configuración visual restaurada.\n✅ Efectos reactivados\n✅ Notificaciones activas"
@@ -82,9 +139,9 @@ else
     # Pausar/matar notificaciones (swaync)
     pkill -STOP swaync 2>/dev/null
     
-    # Matar procesos de wallpaper que consumen recursos
-    pkill -9 mpvpaper 2>/dev/null  # Videos animados
-    swww kill 2>/dev/null          # Daemon de imágenes
+    # Detener quickshell y toda la pila de wallpapers para liberar recursos al maximo.
+    stop_quickshell_full
+    stop_wallpaper_stack_full
     
     # Opcional: Pausar otros daemons innecesarios
     # pkill -STOP rog-control-center 2>/dev/null
