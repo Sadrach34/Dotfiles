@@ -58,8 +58,12 @@ Rectangle {
 
     Connections {
         target: root
+        ignoreUnknownSignals: true
         function onDashboardVisibleChanged() {
             if (root.dashboardVisible) swayncProc.running = true
+        }
+        function onTopPanelVisibleChanged() {
+            if (root.topPanelVisible) swayncProc.running = true
         }
     }
 

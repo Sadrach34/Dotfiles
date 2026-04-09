@@ -9,6 +9,7 @@ import Quickshell.Io
 Item {
     id: root
     property string gmNewScript: Quickshell.env("HOME") + "/.config/hypr/scripts/GMnew"
+
     property bool hasCachyKernel: false
     property bool hasScxctl: false
     readonly property bool canSwitchScheduler: hasCachyKernel && hasScxctl
