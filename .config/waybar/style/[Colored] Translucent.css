@@ -129,7 +129,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -249,7 +251,8 @@ label:focus {
     color: #a0a0a0;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
     color: #cc3436;
 }
 

@@ -40,7 +40,7 @@
 	"backlight#vertical",
 	"pulseaudio/slider",
 	"pulseaudio#microphone_vertical",
-	"group/power#vert",
+	"custom/qs_dashboard",
 ],
 
 

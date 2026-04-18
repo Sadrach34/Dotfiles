@@ -60,7 +60,9 @@ window#waybar.empty #window {
 #custom-lock,
 #custom-menu,
 #custom-power,
+#custom-qs_dashboard,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-speaker,
 #custom-swaync,
 #custom-updater,
@@ -241,7 +243,8 @@ window#waybar.empty #window {
   padding-right: 12px;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 
   color: #f7768e;
   padding-left: 8px;

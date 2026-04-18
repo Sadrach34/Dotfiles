@@ -16,57 +16,64 @@ Rectangle {
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.leftMargin: 30
-    anchors.rightMargin: 30
+    anchors.leftMargin: 20
+    anchors.rightMargin: 20
     height: 1
     color: root.colors ? Qt.rgba(root.colors.primary.r, root.colors.primary.g, root.colors.primary.b, 0.15) : Qt.rgba(1, 1, 1, 0.1)
   }
 
   Row {
     anchors.right: parent.right
-    anchors.rightMargin: 30
+    anchors.rightMargin: 20
     anchors.verticalCenter: parent.verticalCenter
-    spacing: 16
+    spacing: 10
 
-    Item {
-      width: discardCanvas.width + 4
-      height: 34
-      opacity: root.panel.hasUnsavedChanges ? 1 : 0.3
+    Rectangle {
+      width: 110
+      height: 32
+      radius: 8
+      color: defaultsMouse.containsMouse
+        ? (root.colors ? Qt.rgba(root.colors.tertiary.r, root.colors.tertiary.g, root.colors.tertiary.b, 0.22) : Qt.rgba(0.5, 0.8, 1, 0.22))
+        : "transparent"
+      border.width: 1
+      border.color: root.colors ? Qt.rgba(root.colors.tertiary.r, root.colors.tertiary.g, root.colors.tertiary.b, 0.50) : Qt.rgba(0.5, 0.8, 1, 0.50)
 
-      Canvas {
-        id: discardCanvas
-        anchors.centerIn: parent
-        width: 120; height: 30
-
-        property bool hovered: discardMouse.containsMouse
-        property color fillColor: hovered
-          ? (root.colors ? Qt.rgba(root.colors.error.r, root.colors.error.g, root.colors.error.b, 0.2) : Qt.rgba(1, 0.3, 0.3, 0.2))
-          : "transparent"
-        property color strokeColor: root.colors ? Qt.rgba(root.colors.error.r, root.colors.error.g, root.colors.error.b, 0.5) : Qt.rgba(1, 0.3, 0.3, 0.5)
-
-        onFillColorChanged: requestPaint()
-        onStrokeColorChanged: requestPaint()
-
-        onPaint: {
-          var ctx = getContext("2d")
-          ctx.clearRect(0, 0, width, height)
-          var sk = root.panel.skewOffset
-          ctx.fillStyle = fillColor
-          ctx.beginPath()
-          ctx.moveTo(sk, 0)
-          ctx.lineTo(width, 0)
-          ctx.lineTo(width - sk, height)
-          ctx.lineTo(0, height)
-          ctx.closePath()
-          ctx.fill()
-          ctx.strokeStyle = strokeColor
-          ctx.lineWidth = 1
-          ctx.stroke()
-        }
-      }
+      Behavior on color { ColorAnimation { duration: 120 } }
 
       Text {
-        anchors.centerIn: discardCanvas
+        anchors.centerIn: parent
+        text: "DEFAULTS"
+        font.family: Style.fontFamily
+        font.pixelSize: 11
+        font.weight: Font.Bold
+        font.letterSpacing: 0.5
+        color: root.colors ? root.colors.tertiary : "#8bceff"
+      }
+
+      MouseArea {
+        id: defaultsMouse
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.panel.resetToDefaultsDraft()
+      }
+    }
+
+    Rectangle {
+      width: 110
+      height: 32
+      radius: 8
+      opacity: root.panel.hasUnsavedChanges ? 1 : 0.35
+      color: discardMouse.containsMouse
+        ? (root.colors ? Qt.rgba(root.colors.error.r, root.colors.error.g, root.colors.error.b, 0.22) : Qt.rgba(1, 0.3, 0.3, 0.22))
+        : "transparent"
+      border.width: 1
+      border.color: root.colors ? Qt.rgba(root.colors.error.r, root.colors.error.g, root.colors.error.b, 0.50) : Qt.rgba(1, 0.3, 0.3, 0.50)
+
+      Behavior on color { ColorAnimation { duration: 120 } }
+
+      Text {
+        anchors.centerIn: parent
         text: "DISCARD"
         font.family: Style.fontFamily
         font.pixelSize: 11
@@ -86,45 +93,21 @@ Rectangle {
       }
     }
 
-    Item {
-      width: saveCanvas.width + 4
-      height: 34
-      opacity: root.panel.hasUnsavedChanges ? 1 : 0.3
+    Rectangle {
+      width: 110
+      height: 32
+      radius: 8
+      opacity: root.panel.hasUnsavedChanges ? 1 : 0.35
+      color: saveMouse.containsMouse
+        ? (root.colors ? root.colors.primary : "#4fc3f7")
+        : (root.colors ? Qt.rgba(root.colors.primary.r, root.colors.primary.g, root.colors.primary.b, 0.18) : Qt.rgba(0.3, 0.8, 1, 0.18))
+      border.width: 1
+      border.color: root.colors ? Qt.rgba(root.colors.primary.r, root.colors.primary.g, root.colors.primary.b, 0.55) : Qt.rgba(0.3, 0.8, 1, 0.55)
 
-      Canvas {
-        id: saveCanvas
-        anchors.centerIn: parent
-        width: 120; height: 30
-
-        property bool hovered: saveMouse.containsMouse
-        property color fillColor: hovered
-          ? (root.colors ? root.colors.primary : "#4fc3f7")
-          : (root.colors ? Qt.rgba(root.colors.primary.r, root.colors.primary.g, root.colors.primary.b, 0.2) : Qt.rgba(0.3, 0.8, 1, 0.2))
-        property color strokeColor: root.colors ? Qt.rgba(root.colors.primary.r, root.colors.primary.g, root.colors.primary.b, 0.6) : Qt.rgba(0.3, 0.8, 1, 0.6)
-
-        onFillColorChanged: requestPaint()
-        onStrokeColorChanged: requestPaint()
-
-        onPaint: {
-          var ctx = getContext("2d")
-          ctx.clearRect(0, 0, width, height)
-          var sk = root.panel.skewOffset
-          ctx.fillStyle = fillColor
-          ctx.beginPath()
-          ctx.moveTo(sk, 0)
-          ctx.lineTo(width, 0)
-          ctx.lineTo(width - sk, height)
-          ctx.lineTo(0, height)
-          ctx.closePath()
-          ctx.fill()
-          ctx.strokeStyle = strokeColor
-          ctx.lineWidth = 1
-          ctx.stroke()
-        }
-      }
+      Behavior on color { ColorAnimation { duration: 120 } }
 
       Text {
-        anchors.centerIn: saveCanvas
+        anchors.centerIn: parent
         text: "SAVE"
         font.family: Style.fontFamily
         font.pixelSize: 11

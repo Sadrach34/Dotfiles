@@ -94,7 +94,9 @@ button.active {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -155,14 +157,16 @@ button.active {
     border-bottom: 8px solid #5d743e;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
     background-color: #ee606a;
     color: #2d353b;
     border-bottom: 8px solid #ca4853;
     padding-left: 5px;
 }
 
-#custom-power_vertical{
+#custom-power_vertical,
+#custom-qs_dashboard_top{
     background-color: #ee606a;
     color: #2d353b;
     border-bottom: 8px solid #ca4853;

@@ -39,7 +39,6 @@ ShellRoot {
     property bool appLauncherVisible:     false  // lanzador de apps con búsqueda y freq
     property bool windowSwitcherVisible:  false  // ALT+TAB estilo paralelo
     property bool wallpaperPickerVisible: false  // selector visual de fondos de pantalla
-    property bool configPanelVisible:     false  // panel de configuración (apps/iconos/background)
 
     // ── Helpers de toggle ────────────────────────────────────────────────────
     // Llamados desde los IpcHandlers; invierten el flag correspondiente.
@@ -48,7 +47,6 @@ ShellRoot {
     function toggleAppLauncher()     { appLauncherVisible    = !appLauncherVisible }
     function toggleWindowSwitcher()  { windowSwitcherVisible = !windowSwitcherVisible }
     function toggleWallpaperPicker() { wallpaperPickerVisible = !wallpaperPickerVisible }
-    function toggleConfigPanel()     { configPanelVisible = !configPanelVisible }
     function openWallpaperPicker()   { wallpaperPickerVisible = true }
     function closeWallpaperPicker()  { wallpaperPickerVisible = false }
 
@@ -81,11 +79,6 @@ ShellRoot {
     WallpaperPicker {}     // Selector de fondos: thumbnails 900×520, navegación
                            //   con teclado/scroll, aplica con swww
 
-    ConfigPanel {
-        colors: skwdColors
-        colorService: themeColors
-    }
-
     ModernClock {}
 
     // ── IPC Handlers ─────────────────────────────────────────────────────────
@@ -115,11 +108,6 @@ ShellRoot {
         function open() { root.openWallpaperPicker() }
         function close() { root.closeWallpaperPicker() }
     }
-    IpcHandler {
-        target: "config"
-        function toggle() { root.toggleConfigPanel() }
-    }
-
     // ── Screenshot tool (Win+S) ───────────────────────────────────────────────
     // ScreenshotTool se crea al activarse y se destruye al cerrar (active: SsState.screenshotToolVisible)
     // ScreenshotOverlay siempre cargado para recibir la señal onImageSaved

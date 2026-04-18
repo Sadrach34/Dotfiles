@@ -1,7 +1,7 @@
 /* ---- 💫 https://github.com/sadrach34 💫 ---- */
 /* Wallust - Chroma Tally */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../wallust/colors-waybar.css';
 
 * {
 font-family: "JetBrainsMono Nerd Font";
@@ -104,7 +104,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -230,7 +232,8 @@ tooltip {
 	color: yellow;
 	padding-left: 8px;
 }
-#custom-power{
+#custom-power,
+#custom-qs_dashboard{
     color: #eba0ac; 
 }
 

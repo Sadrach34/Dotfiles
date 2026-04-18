@@ -88,6 +88,6 @@
 	"pulseaudio",
 	//"wireplumber", 
 	"pulseaudio#microphone",	  
-	"custom/power",
+	"custom/qs_dashboard",
 	],  
 }],

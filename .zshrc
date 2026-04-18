@@ -171,3 +171,6 @@ export PYENV_REHASH_TIMEOUT=5
 # Following line was automatically added by arttime installer
 export MANPATH=/home/sadrach/.local/share/man:$MANPATH
 alias sdrxdotsctl='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+# opencode
+export PATH=/home/sadrach/.opencode/bin:$PATH

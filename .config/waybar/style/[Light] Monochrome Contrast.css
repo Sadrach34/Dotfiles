@@ -121,7 +121,9 @@ tooltip label{
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -146,7 +148,8 @@ tooltip label{
 	padding-right: 6px;
 	padding-left: 6px;
 }
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	padding: 1px 3px;
 }
 /*-----Indicators----*/

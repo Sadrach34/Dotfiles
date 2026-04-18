@@ -34,5 +34,5 @@
 	"backlight", 
 	"pulseaudio", 
 	"battery", 
-	"custom/power"],
+	"custom/qs_dashboard"],
 }

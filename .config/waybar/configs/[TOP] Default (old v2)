@@ -53,6 +53,6 @@
 	"custom/keyboard",
 	"custom/lock",
 	"custom/separator#dot-line",
-	"custom/power",
+	"custom/qs_dashboard",
 	],
 }

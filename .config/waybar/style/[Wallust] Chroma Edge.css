@@ -1,7 +1,7 @@
 /* ---- 💫 https://github.com/sadrach34 💫 ---- */
 /* Wallust Chroma Edge */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../wallust/colors-waybar.css';
 
 * {
 font-family: "JetBrainsMono Nerd Font";
@@ -120,7 +120,9 @@ tooltip label{
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -182,7 +184,8 @@ tooltip label{
 	color: #ebcb8b;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	color: #cc3436;
 	padding: 0px 0px 0px 6px;
 }

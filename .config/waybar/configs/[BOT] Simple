@@ -36,7 +36,7 @@
 	"hyprland/window",  
 	"battery",
  	"group/audio", 
-	"custom/power",
+	"custom/qs_dashboard",
 	],
 }
 

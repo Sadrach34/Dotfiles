@@ -3,7 +3,7 @@
 
 /* edited by: https://github.com/prateekshukla1108 */ 
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../wallust/colors-waybar.css';
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -105,7 +105,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -228,7 +230,8 @@ tooltip {
     padding-left: 8px;
 }
 
-#custom-power{
+#custom-power,
+#custom-qs_dashboard{
     color: @color6; /* Lighter */
 }
 

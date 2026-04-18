@@ -11,7 +11,7 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/mocha.css";
+@import "./catppuccin-themes/mocha.css";
 
 window#waybar {
   background-color: @base;
@@ -103,7 +103,9 @@ tooltip label {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -161,7 +163,8 @@ tooltip label {
 }
 
 #custom-lock,
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
   color: @red;
   border-radius: 15px;
   font-weight: bolder;

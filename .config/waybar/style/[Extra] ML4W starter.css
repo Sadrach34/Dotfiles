@@ -169,7 +169,9 @@ window#waybar.empty #window {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -207,7 +209,8 @@ window#waybar.empty #window {
   	padding-left: 4px;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
     margin: 2px 10px 0px 0px;
     padding:0px;
     color: @iconcolor;

@@ -10,7 +10,7 @@ font-size: 97%;
 font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../wallust/colors-waybar.css';
 
 #waybar.empty, #waybar.tiled, #waybar.floating {
 	background-color: transparent;
@@ -124,7 +124,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -155,7 +157,8 @@ tooltip {
 	color: #cc3436;
 	font-weight: bold;
 }
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	/*background-color: rgba(0,119,179,0.6);*/
 	/*border-radius: 50px;*/
 	padding: 1px 3px;

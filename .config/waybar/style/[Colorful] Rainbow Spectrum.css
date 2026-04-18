@@ -112,7 +112,9 @@ tooltip label{
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -208,7 +210,8 @@ tooltip label{
   	border: 1px solid #b4befe;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	background-color: #f38ba8;
 	padding: 0px 0px 0px 6px;
 }
@@ -259,6 +262,7 @@ tooltip label{
 }
 
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-light_dark,
 #custom-hypridle,
 #idle_inhibitor {

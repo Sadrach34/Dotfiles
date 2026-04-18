@@ -39,7 +39,7 @@
 	"backlight#vertical",
 	"pulseaudio#microphone_vertical",
 	"pulseaudio#vertical",
-	"custom/power_vertical",
+	"custom/qs_dashboard",
 	"custom/menu",
 ],
 }

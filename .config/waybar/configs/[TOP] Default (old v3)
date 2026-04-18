@@ -56,6 +56,6 @@
 	"keyboard-state",
 	"custom/keyboard",
 	"custom/lock",
-	"custom/power",
+	"custom/qs_dashboard",
 	],
 }

@@ -29,8 +29,8 @@
 @define-color textcolor3 #FFFFFF;
 @define-color iconcolor #FFFFFF;
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
-@import "../waybar/style/catppuccin-themes/latte.css";
+@import '../wallust/colors-waybar.css';
+@import "./catppuccin-themes/latte.css";
 
 * {
     font-family: "JetBrainsMono Nerd Font";
@@ -153,7 +153,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,

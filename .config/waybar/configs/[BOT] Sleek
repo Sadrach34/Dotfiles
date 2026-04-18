@@ -40,7 +40,7 @@
 	"pulseaudio",
 	"custom/separator#blank",
 	"power-profiles-daemon",
-	"custom/power",					
+	"custom/qs_dashboard",					
 	],
 
 }

@@ -1,7 +1,7 @@
 /* ---- 💫 https://github.com/sadrach34 💫 ---- */
 /*  ml4w-modern */
 
-@import '../../.config/waybar/wallust/colors-waybar.css';
+@import '../wallust/colors-waybar.css';
 
 @define-color backgroundlight @color0;
 @define-color backgrounddark @color12;
@@ -160,7 +160,9 @@ window#waybar.empty #window {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -213,7 +215,8 @@ window#waybar.empty #window {
     border:3px solid @bordercolor;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
     background-color: @backgrounddark;
     color: @textcolor1;
     border-radius: 5px 5px 5px 5px;

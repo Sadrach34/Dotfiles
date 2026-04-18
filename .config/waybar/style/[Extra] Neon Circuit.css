@@ -117,7 +117,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -374,7 +376,8 @@ tooltip {
     padding-right: 8px;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
     border-radius: 12px;
     border-top-left-radius: 0px;
     border-bottom-right-radius: 0px;

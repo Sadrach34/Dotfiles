@@ -109,7 +109,9 @@ tooltip label{
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -142,7 +144,8 @@ tooltip label{
 #backlight {
 	padding-right: 2px;
 }
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	padding-left: 10px;
 	padding-right: 2px;
 }

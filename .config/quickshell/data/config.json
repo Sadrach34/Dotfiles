@@ -50,8 +50,8 @@
   "components": {
     "bar": {
       "backend": "waybar",
-      "waybarConfig": "~/.config/waybar/config",
-      "waybarStyle": "~/.config/waybar/style.css",
+      "waybarConfig": "~/.config/waybar/configs/[TOP] Default",
+      "waybarStyle": "~/.config/waybar/style/[Dark] Purpl.css",
       "enabled": true,
       "weather": {
         "enabled": false,
@@ -70,7 +70,9 @@
         "visualizer": "wave",
         "visualizerTop": true,
         "visualizerBottom": true
-      }
+      },
+      "waybarLayoutPreset": "[TOP] Default",
+      "waybarStylePreset": "[Dark] Purpl"
     },
     "lockscreen": false,
     "appLauncher": true,
@@ -84,22 +86,22 @@
       "items": [
         {
           "action": "lock",
-          "icon": "",
+          "icon": "\uf023",
           "label": ""
         },
         {
           "action": "logout",
-          "icon": "",
+          "icon": "\uf2f5",
           "label": ""
         },
         {
           "action": "reboot",
-          "icon": "",
+          "icon": "\uf2f9",
           "label": ""
         },
         {
           "action": "poweroff",
-          "icon": "",
+          "icon": "\uf011",
           "label": ""
         }
       ]

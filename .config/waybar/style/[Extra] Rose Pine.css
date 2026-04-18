@@ -140,7 +140,9 @@ tooltip {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -206,7 +208,8 @@ tooltip {
 #network {
 	padding-right: 12px;
 }
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
 	padding-right: 1px;
 }
 #group-motherboard,

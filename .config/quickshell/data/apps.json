@@ -9,6 +9,7 @@
     "background": "~/Documentos/Apps(NOBORRAR)/logo_network_manager.jpg"
   },
   "android file transfer (mtp)": {},
+  "antigravity": {},
   "audacity": {},
   "avahi ssh server browser": {},
   "avahi vnc server browser": {},
@@ -26,6 +27,7 @@
     "icon": "󰂯",
     "background": "~/dotfiles/.config/quickshell/images/apps/bluetooth.webp"
   },
+  "borderlands goty enhanced": {},
   "btop++": {},
   "bulk rename": {},
   "cmake": {},
@@ -35,7 +37,9 @@
     "background": "~/.config/quickshell/images/apps/discord.webp",
     "icon": "󰙯",
     "displayName": "Totally Not Discord",
-    "tags": "chat voice call kitten"
+    "tags": [
+      "chat voice call kitten"
+    ]
   },
   "displays settings": {},
   "dolphin": {},
@@ -47,7 +51,9 @@
   "firefox": {
     "icon": "󰈹",
     "displayName": "Firefox",
-    "tags": "browser web",
+    "tags": [
+      "browser web"
+    ],
     "background": "~/dotfiles/.config/quickshell/images/apps/firefox.jpg"
   },
   "gnome system monitor": {},
@@ -69,13 +75,16 @@
   "kitty": {
     "icon": "",
     "displayName": "Terminal",
-    "tags": "shell console"
+    "tags": [
+      "shell console"
+    ]
   },
   "kvantum manager": {},
   "manage printing": {},
   "megabonk": {},
   "mgba": {},
   "minecraft bedrock launcher": {},
+  "mongodb compass": {},
   "mousepad": {},
   "mpv media player": {},
   "nvtop": {},
@@ -143,5 +152,6 @@
   },
   "xgps": {},
   "xgpsspeed": {},
-  "yad settings": {}
+  "yad settings": {},
+  "zen browser": {}
 }

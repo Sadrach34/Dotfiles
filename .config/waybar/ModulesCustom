@@ -47,9 +47,9 @@
 
 "custom/settings": {
 	"format": " ",
-	"on-click": "$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh",
+	"on-click": "$HOME/.config/quickshell/scripts/bash/toggle-config-panel.sh",
 	"tooltip": true,
-	"tooltip-format": "Launch KooL Hyprland Settings Menu",
+	"tooltip-format": "Toggle Python Config Panel",
 },
 
 "custom/cycle_wall": {

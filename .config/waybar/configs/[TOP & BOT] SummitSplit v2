@@ -35,7 +35,7 @@
       "pulseaudio",
       "group/mobo_drawer", 
       "idle_inhibitor",
-      "group/power"
+      "custom/qs_dashboard"
     ],
 
 },

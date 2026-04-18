@@ -11,7 +11,7 @@
 	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 }
 
-@import "../waybar/style/catppuccin-themes/rgbmocha.css";
+@import "./catppuccin-themes/rgbmocha.css";
 
 window#waybar {
   	transition-property: background-color;
@@ -128,7 +128,9 @@ window#waybar.empty #window {
 #custom-menu,
 #custom-playerctl,
 #custom-power_vertical,
+#custom-qs_dashboard_top,
 #custom-power,
+#custom-qs_dashboard,
 #custom-quit,
 #custom-reboot,
 #custom-settings,
@@ -237,7 +239,8 @@ window#waybar.empty #window {
   color: @rosewater;
 }
 
-#custom-power {
+#custom-power,
+#custom-qs_dashboard {
   color: @red;
 }
 

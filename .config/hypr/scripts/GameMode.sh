@@ -13,6 +13,7 @@ NOTIF_ICON="$HOME/.config/swaync/images/ja.png"
 WALLPAPER="$HOME/.config/rofi/.current_wallpaper" 
 WALLPAPER_PIDFILE="/tmp/wallpaper_auto_change.pid"
 WALLPAPER_APPLY_SCRIPT="$HOME/.config/hypr/UserScripts/WallpaperApply.sh"
+SKWD_STATE_FILE="$HOME/.cache/skwd-wall/last-wallpaper.json"
 
 # --- LÓGICA ---
 LOCK_FILE="/tmp/gamemode.lock"
@@ -26,6 +27,32 @@ stop_quickshell_full() {
     sleep 0.2
     pkill -9 -x quickshell 2>/dev/null || true
     pkill -9 -x qs 2>/dev/null || true
+}
+
+stop_we_engine_full() {
+    pids="$(pgrep -f '(^|/)linux-wallpaperengine([[:space:]]|$)' 2>/dev/null || true)"
+    if [ -n "$pids" ]; then
+        for pid in $pids; do
+            kill -TERM "$pid" 2>/dev/null || true
+        done
+    fi
+
+    for _ in $(seq 1 40); do
+        pgrep -f '(^|/)linux-wallpaperengine([[:space:]]|$)' >/dev/null 2>&1 || break
+        sleep 0.05
+    done
+
+    pids="$(pgrep -f '(^|/)linux-wallpaperengine([[:space:]]|$)' 2>/dev/null || true)"
+    if [ -n "$pids" ]; then
+        for pid in $pids; do
+            kill -KILL "$pid" 2>/dev/null || true
+        done
+    fi
+
+    for _ in $(seq 1 20); do
+        pgrep -f '(^|/)linux-wallpaperengine([[:space:]]|$)' >/dev/null 2>&1 || break
+        sleep 0.05
+    done
 }
 
 stop_wallpaper_stack_full() {
@@ -49,27 +76,56 @@ stop_wallpaper_stack_full() {
     pkill -x hyprpaper 2>/dev/null || true
     pkill -x awww-daemon 2>/dev/null || true
     awww kill 2>/dev/null || true
+    stop_we_engine_full
 }
 
 restore_wallpaper_once() {
-    if [ ! -e "$WALLPAPER" ]; then
+    state_type=""
+    state_path=""
+    state_we_id=""
+
+    if [ -f "$SKWD_STATE_FILE" ] && command -v jq >/dev/null 2>&1; then
+        state_type="$(jq -r '.type // empty' "$SKWD_STATE_FILE" 2>/dev/null || true)"
+        state_path="$(jq -r '.path // empty' "$SKWD_STATE_FILE" 2>/dev/null || true)"
+        state_we_id="$(jq -r '.we_id // empty' "$SKWD_STATE_FILE" 2>/dev/null || true)"
+    fi
+
+    case "$state_type" in
+        video)
+            if [ -n "$state_path" ] && [ -x "$WALLPAPER_APPLY_SCRIPT" ]; then
+                "$WALLPAPER_APPLY_SCRIPT" video "$state_path" >/dev/null 2>&1 || true
+                return
+            fi
+            ;;
+        we)
+            if [ -n "$state_we_id" ] && [ -x "$WALLPAPER_APPLY_SCRIPT" ]; then
+                "$WALLPAPER_APPLY_SCRIPT" we "$state_we_id" >/dev/null 2>&1 || true
+                return
+            fi
+            ;;
+        static)
+            if [ -n "$state_path" ]; then
+                current_wall="$state_path"
+            fi
+            ;;
+    esac
+
+    if [ ! -e "$WALLPAPER" ] && [ -z "${current_wall:-}" ]; then
         return
     fi
 
-    current_wall="$(readlink -f "$WALLPAPER" 2>/dev/null || true)"
+    current_wall="$(readlink -f "${current_wall:-$WALLPAPER}" 2>/dev/null || true)"
     if [ -z "$current_wall" ]; then
-        current_wall="$WALLPAPER"
+        current_wall="${state_path:-$WALLPAPER}"
     fi
 
-    if [ -x "$WALLPAPER_APPLY_SCRIPT" ]; then
-        "$WALLPAPER_APPLY_SCRIPT" image "$current_wall" >/dev/null 2>&1 || true
+    if ! command -v awww >/dev/null 2>&1 || ! command -v awww-daemon >/dev/null 2>&1; then
         return
     fi
 
-    # Fallback por compatibilidad si no existe WallpaperApply.sh
     if ! pgrep -x awww-daemon >/dev/null; then
-        awww-daemon --format xrgb >/dev/null 2>&1 &
-        sleep 1
+        nohup setsid awww-daemon >/dev/null 2>&1 &
+        sleep 0.5
     fi
     awww img "$current_wall" >/dev/null 2>&1 || true
 }
