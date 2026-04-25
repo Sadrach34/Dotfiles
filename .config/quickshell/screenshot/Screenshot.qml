@@ -292,7 +292,12 @@ QtObject {
         var srcPath = root.tempPathBase + "_" + m.name + ".png";
 
         var geom = `${physW}x${physH}+${physX}+${physY}`;
-        cropProcess.command = ["convert", srcPath, "-crop", geom, root.finalPath];
+        cropProcess.command = [
+            "bash", "-c",
+            `if command -v magick >/dev/null 2>&1; then magick "${srcPath}" -crop "${geom}" "${root.finalPath}"; ` +
+            `elif command -v convert >/dev/null 2>&1; then convert "${srcPath}" -crop "${geom}" "${root.finalPath}"; ` +
+            `else grim -g "${x},${y} ${w}x${h}" "${root.finalPath}"; fi`
+        ];
         cropProcess.running = true;
     }
 
