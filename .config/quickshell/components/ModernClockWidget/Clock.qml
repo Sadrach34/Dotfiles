@@ -2,10 +2,14 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
+import ".."
 
-ShellRoot {
-    PanelWindow {
+PanelWindow {
     id: clockPanel
+    required property ShellScreen targetScreen
+    screen: targetScreen
+
+    UiPerformance { id: uiPerf }
 
         // ┌─────────────────────────────────────┐
         // │           Widget position           │
@@ -31,7 +35,7 @@ ShellRoot {
         property color clockTextColor: "#ffffff"
         Behavior on clockTextColor {
             ColorAnimation {
-                duration: 220
+                duration: uiPerf.ms(220)
                 easing.type: Easing.OutCubic
             }
         }
@@ -48,7 +52,7 @@ ShellRoot {
         property real dateFontSize: 20
         property real timeFontSize: 17
         property string forcedTextColor: ""
-        property int moveAnimMs: 320
+        property int moveAnimMs: uiPerf.ms(320)
         property string pendingWeId: ""
         property string pendingWeProjectRaw: ""
         readonly property string positionsFilePath: Quickshell.env("HOME") + "/.config/quickshell/components/ModernClockWidget/positions.json"
@@ -425,4 +429,3 @@ ShellRoot {
             }
         }
     }
-}

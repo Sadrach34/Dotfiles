@@ -62,9 +62,13 @@ Scope {
   property bool _lastSavedOptimizationEnabled: false
   property string _lastSavedOptimizationJson: ""
 
-  readonly property color cfgSurfaceColor: (colorService && colorService.hasCustomFilterBarBg)
-    ? Qt.rgba(colorService.filterBarBg.r, colorService.filterBarBg.g, colorService.filterBarBg.b, 0.92)
-    : (colors ? Qt.rgba(colors.surface.r, colors.surface.g, colors.surface.b, 0.88) : Qt.rgba(0.1, 0.06, 0.05, 0.88))
+  readonly property bool _noTransparency: getNested(configData, ["optimization", "toggles", "disableTransparency"], false)
+
+  readonly property color cfgSurfaceColor: _noTransparency
+    ? (colors ? Qt.rgba(colors.surface.r, colors.surface.g, colors.surface.b, 1.0) : Qt.rgba(0.1, 0.06, 0.05, 1.0))
+    : (colorService && colorService.hasCustomFilterBarBg)
+      ? Qt.rgba(colorService.filterBarBg.r, colorService.filterBarBg.g, colorService.filterBarBg.b, 0.92)
+      : (colors ? Qt.rgba(colors.surface.r, colors.surface.g, colors.surface.b, 0.88) : Qt.rgba(0.1, 0.06, 0.05, 0.88))
   readonly property color cfgBorderColor: (colorService && colorService.hasCustomFilterBarBg)
     ? Qt.rgba(colorService.filterBarActiveBg.r, colorService.filterBarActiveBg.g, colorService.filterBarActiveBg.b, 0.30)
     : (colors ? Qt.rgba(colors.primary.r, colors.primary.g, colors.primary.b, 0.15) : Qt.rgba(1, 1, 1, 0.1))
