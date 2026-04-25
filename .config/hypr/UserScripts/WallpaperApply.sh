@@ -388,3 +388,9 @@ else
   set_startup_mode_image
 fi
 
+# set_startup_mode_* modifica Startup_Apps.conf → Hyprland recarga → pierde keyword overrides.
+# Re-aplicar estado de optimizacion despues de que Hyprland asiente.
+if [ -x "$HOME/.config/hypr/scripts/ApplyOptimizationState.sh" ]; then
+  nohup "$HOME/.config/hypr/scripts/ApplyOptimizationState.sh" --defer >/dev/null 2>&1 &
+fi
+

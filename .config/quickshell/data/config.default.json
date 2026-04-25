@@ -1,0 +1,117 @@
+{
+  "_comment": "Plantilla de configuración. Copia este archivo a config.json y edita según tu setup.",
+  "compositor": "hyprland",
+  "paths": {
+    "scripts": "~/.config/hypr/scripts",
+    "cache": "~/.cache/quickshell",
+    "wallpaper": "~/Pictures/wallpapers",
+    "steamWorkshop": "~/.local/share/Steam/steamapps/workshop/content/431960",
+    "steamWeAssets": "~/.local/share/Steam/steamapps/common/wallpaper_engine/assets",
+    "steam": "~/.local/share/Steam"
+  },
+  "monitor": "DP-1",
+  "ollama": {
+    "url": "http://localhost:11434",
+    "model": "gemma3:4b"
+  },
+  "matugen": {
+    "schemeType": "scheme-fidelity",
+    "kdeColorScheme": "SkwdMatugen"
+  },
+  "integrations": {
+    "kitty": "~/.config/kitty/skwd-theme.conf",
+    "kde": "~/.local/share/color-schemes/SkwdMatugen.colors",
+    "vscode": "",
+    "vesktop": "",
+    "zen": "",
+    "spicetify": "",
+    "spicetifyCss": "",
+    "yazi": "~/.config/yazi/theme.toml",
+    "qt6ct": "~/.config/qt6ct/colors/matugen.conf"
+  },
+  "intervals": {
+    "weatherPollMs": 600000,
+    "wifiPollMs": 10000,
+    "smartHomePollMs": 5000,
+    "ollamaStatusPollMs": 5000,
+    "notificationExpireMs": 8000,
+    "systemStatsFastSec": 3,
+    "systemStatsSlowSec": 30
+  },
+  "terminal": "kitty",
+  "power": {
+    "deviceType": "desktop",
+    "profile": "performance"
+  },
+  "optimization": {
+    "enabled": false,
+    "toggles": {
+      "disableBorders": false,
+      "disableTransparency": false,
+      "disableAnimations": false,
+      "disableQuickshellAnimations": false,
+      "disableBlur": false,
+      "disableShadows": false,
+      "disableRounding": false,
+      "disableGaps": false,
+      "disableDimInactive": false
+    },
+    "restoreState": null
+  },
+  "wallpaperMute": true,
+  "components": {
+    "bar": {
+      "backend": "waybar",
+      "waybarConfig": "~/.config/waybar/configs/[TOP] Default",
+      "waybarStyle": "~/.config/waybar/style/[Dark] Purpl.css",
+      "enabled": true,
+      "weather": {
+        "enabled": false,
+        "city": ""
+      },
+      "wifi": {
+        "enabled": false,
+        "interface": "eth0"
+      },
+      "bluetooth": true,
+      "volume": true,
+      "calendar": true,
+      "music": {
+        "enabled": true,
+        "preferredPlayer": "spotify",
+        "visualizer": "wave",
+        "visualizerTop": true,
+        "visualizerBottom": true
+      },
+      "waybarLayoutPreset": "[TOP] Default",
+      "waybarStylePreset": "[Dark] Purpl"
+    },
+    "lockscreen": false,
+    "appLauncher": true,
+    "wallpaperSelector": {
+      "enabled": true,
+      "showColorDots": false
+    },
+    "windowSwitcher": true,
+    "powerMenu": {
+      "enabled": true,
+      "items": [
+        { "action": "lock",    "icon": "", "label": "" },
+        { "action": "logout",  "icon": "", "label": "" },
+        { "action": "reboot",  "icon": "", "label": "" },
+        { "action": "poweroff","icon": "", "label": "" }
+      ]
+    },
+    "smartHome": false,
+    "notifications": true
+  },
+  "hypridle": {
+    "enabled": true,
+    "warnMinutes": 9,
+    "lockMinutes": 10,
+    "ignoreDbusInhibit": false
+  },
+  "appearance": {
+    "colorMode": "dark"
+  }
+}
