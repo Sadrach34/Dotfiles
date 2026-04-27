@@ -1,58 +1,105 @@
 #!/bin/bash
 
-# Script to open WhatsApp Web in Firefox and focus the window
-# Author: Assistant for sadrach
+# Detectar navegador default
+DESKTOP_FILE=$(xdg-settings get default-web-browser 2>/dev/null)
 
-# Function to check if Firefox exists ONLY in normal workspaces
-firefox_exists_in_normal() {
-    local normal_firefox=$(hyprctl clients -j | jq -r '.[] | select(.class == "firefox" and .workspace.name != "special") | .address' | wc -l)
-    [ "$normal_firefox" -gt 0 ]
+# Mapear .desktop → binario y clase de ventana en Hyprland
+case "$DESKTOP_FILE" in
+    zen*.desktop|zen-browser*.desktop)
+        BROWSER_BIN="zen-browser"
+        BROWSER_CLASS="zen"
+        BROWSER_ENGINE="gecko"
+        ;;
+    firefox*.desktop)
+        BROWSER_BIN="firefox"
+        BROWSER_CLASS="firefox"
+        BROWSER_ENGINE="gecko"
+        ;;
+    google-chrome*.desktop)
+        BROWSER_BIN="google-chrome-stable"
+        BROWSER_CLASS="google-chrome"
+        BROWSER_ENGINE="chromium"
+        ;;
+    chromium*.desktop)
+        BROWSER_BIN="chromium"
+        BROWSER_CLASS="chromium"
+        BROWSER_ENGINE="chromium"
+        ;;
+    brave*.desktop)
+        BROWSER_BIN="brave"
+        BROWSER_CLASS="brave-browser"
+        BROWSER_ENGINE="chromium"
+        ;;
+    microsoft-edge*.desktop)
+        BROWSER_BIN="microsoft-edge"
+        BROWSER_CLASS="microsoft-edge"
+        BROWSER_ENGINE="chromium"
+        ;;
+    opera*.desktop)
+        BROWSER_BIN="opera"
+        BROWSER_CLASS="opera"
+        BROWSER_ENGINE="chromium"
+        ;;
+    *)
+        # Fallback: usar xdg-open
+        xdg-open https://web.whatsapp.com &
+        exit 0
+        ;;
+esac
+
+WHATSAPP_URL="https://web.whatsapp.com"
+
+browser_exists_in_normal() {
+    local count
+    count=$(hyprctl clients -j | jq -r --arg cls "$BROWSER_CLASS" \
+        '.[] | select(.class == $cls and .workspace.name != "special") | .address' | wc -l)
+    [ "$count" -gt 0 ]
 }
 
-# Function to get Firefox windows not in special workspace
-get_firefox_in_normal_workspace() {
-    hyprctl clients -j | jq -r '.[] | select(.class == "firefox" and .workspace.name != "special") | .address'
+get_browser_in_normal() {
+    hyprctl clients -j | jq -r --arg cls "$BROWSER_CLASS" \
+        '.[] | select(.class == $cls and .workspace.name != "special") | .address'
 }
 
-# Function to focus first Firefox window in normal workspace
-focus_normal_firefox() {
-    local firefox_address=$(get_firefox_in_normal_workspace | head -n1)
-    if [ -n "$firefox_address" ]; then
-        hyprctl dispatch focuswindow "address:$firefox_address"
+focus_normal_browser() {
+    local addr
+    addr=$(get_browser_in_normal | head -n1)
+    if [ -n "$addr" ]; then
+        hyprctl dispatch focuswindow "address:$addr"
         return 0
+    fi
+    return 1
+}
+
+launch_browser() {
+    local mode="$1"  # new-tab | new-instance | fresh
+
+    if [ "$BROWSER_ENGINE" = "gecko" ]; then
+        export MOZ_ENABLE_WAYLAND=1
+        case "$mode" in
+            new-tab)      "$BROWSER_BIN" --new-tab "$WHATSAPP_URL" & ;;
+            new-instance) "$BROWSER_BIN" --new-instance "$WHATSAPP_URL" & ;;
+            fresh)        "$BROWSER_BIN" "$WHATSAPP_URL" & ;;
+        esac
     else
-        return 1
+        # Chromium-based: abrir URL directamente (browser decide si nueva pestaña o ventana)
+        "$BROWSER_BIN" "$WHATSAPP_URL" &
     fi
 }
 
-# Check if Firefox exists in normal workspaces
-if firefox_exists_in_normal; then
-    # Firefox exists in normal workspace, open new tab with WhatsApp
-    MOZ_ENABLE_WAYLAND=1 firefox --new-tab https://web.whatsapp.com &
-    
-    # Wait a moment for the tab to load
+if browser_exists_in_normal; then
+    launch_browser "new-tab"
     sleep 1
-    
-    # Focus Firefox window in normal workspace (not special)
-    focus_normal_firefox
-    
-elif pgrep -f firefox > /dev/null; then
-    # Firefox exists but ONLY in special workspace - start new Firefox instance
-    MOZ_ENABLE_WAYLAND=1 firefox --new-instance https://web.whatsapp.com &
-    
-    # Wait for new Firefox instance to start
+    focus_normal_browser
+
+elif pgrep -f "$BROWSER_BIN" > /dev/null; then
+    # Solo en special workspace
+    launch_browser "new-instance"
     sleep 4
-    
-    # Focus the new Firefox window
-    focus_normal_firefox
-    
+    focus_normal_browser
+
 else
-    # Firefox is not running at all, start it with WhatsApp
-    MOZ_ENABLE_WAYLAND=1 firefox https://web.whatsapp.com &
-    
-    # Wait longer for Firefox to fully start
+    launch_browser "fresh"
     sleep 4
-    
-    # Focus the Firefox window
-    focus_normal_firefox
+    focus_normal_browser
 fi
