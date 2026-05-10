@@ -213,8 +213,8 @@ Projects and people that served as inspiration or reference:
 ## 🤝 Contribution
 
 <div align="center">
-  We welcome contributions of all kinds — bug fixes, new features, documentation improvements, and more.<br>
-  Please read our <a href=".github/CONTRIBUTING.md"><strong>Contributing Guide</strong></a> before submitting a pull request.
+We welcome contributions of all kinds: bug fixes, new features, documentation improvements, and much more.
+Please read the <a href=".github/CONTRIBUTING.md"><strong>Contribution Guide</strong></a> before submitting a pull request.
 </div>
 
 <br>
